@@ -1,0 +1,154 @@
+---
+title: "Tutorial - Comércio Internacional, Brasil - Parte III"
+output:
+  pdf_document: default
+  html_notebook: default
+---
+
+
+```{r setup, include = FALSE}
+library(tidyverse)
+library(here)
+library(scales)
+library(ggthemes)
+library(vroom)
+library(glue)
+library(tidytext)
+library(waffle)
+
+source(here("scripts", "mdic_funcoes.R"))
+
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+
+```
+
+Após fazer uma primeira limpeza nos dados e finalizar nosso primeiro gráfico, de corrente comercial, podemos passar ao próximo passo: formular gráficos que nos indiquem quais os principais produtos comercializados com determinado país e, logo em seguida, identificar os qual a posição do determinado país em relação aos demais em matéria de comércio, tanto de exportações quanto importações. Antes, contudo, precisamos ler os dados.
+
+```{r}
+# exp_imp <- vroom::vroom(here("input", "mdic", "exp_imp.csv"))
+# exp_imp_mes <- vroom::vroom(here("input", "mdic", "exp_imp_mes.csv")) 
+
+```
+
+# Visualização de Dados
+
+## Principais produtos comercializados
+
+### Principais produtos exportados
+
+Aqui, tiraremos proveito das funções anteriores que construímos.
+
+```{r}
+fun_variavel(exp_imp, NO_PAIS, filtro = "China") %>% 
+  fun_produtos_dados("exp") %>% 
+  fun_anos("quatro") %>% 
+  fun_produtos_grafico()
+```
+
+### Principais produtos importados
+
+
+```{r}
+fun_variavel(exp_imp_mes, NO_PAIS, filtro = "China") %>% 
+  fun_produtos_dados("imp") %>% 
+  fun_anos("quatro") %>%
+  fun_produtos_grafico()
+
+```
+
+### Principais produtos tabela
+
+```{r, results='asis'}
+
+fun_variavel(exp_imp, NO_PAIS, filtro = "China") %>% 
+  fun_produtos_dados("imp") %>%
+  fun_produtos_tabela("2016")
+
+
+```
+
+
+## Principais países parceiros comerciais
+
+```{r}
+
+fun_variavel(exp_imp_mes, NO_PAIS, filtro = "Brasil") %>%
+  fun_paises_dados("imp", "Argentina") %>%
+  fun_anos(anos = "quatro") %>%
+  fun_paises_grafico()
+
+```
+
+## Principais paises parceiros - tabela
+
+```{r}
+fun_variavel(exp_imp, NO_PAIS, filtro = "Brasil") %>% 
+  fun_paises_dados("imp", "Afeganistão") %>%
+  fun_paises_tabela(ano = "2016")
+fun_variavel(exp_imp, NO_PAIS, filtro = "Brasil") %>% 
+  fun_paises_dados("imp", "Afeganistão") %>%
+  fun_paises_tabela(ano = "2017")
+fun_variavel(exp_imp, NO_PAIS, filtro = "Brasil") %>% 
+  fun_paises_dados("imp", "Afeganistão")
+
+
+```
+
+
+# Gráficos de Waffle
+
+## Waffle de Produtos
+
+```{r}
+
+filtro <- "Estados Unidos"
+
+fun_variavel(exp_imp, NO_PAIS, filtro = filtro) %>%
+  fun_produtos_dados(fluxo = "imp") %>%
+  fun_anos("último") %>% 
+  fun_waffle_produtos(fluxo = "imp")
+
+```
+
+## Waffle de Países
+
+```{r}
+filtro <- "Afeganistão"
+
+  fun_variavel(exp_imp, NO_PAIS, filtro = "Brasil") %>%
+    fun_paises_dados(fluxo = "exp", filtro) %>% 
+    fun_anos("último") %>% 
+    fun_waffle_paises(fluxo = "exp")
+  
+
+```
+
+
+```{r}
+
+fun_variavel(exp_imp, NO_PAIS, filtro = "Alemanha") %>%
+  fun_anos("último") %>% 
+  fun_isic_fat_dados(fator = `Fator Agregado`) %>% 
+  # pivot_wider(names_from = ISIC, values_from = porcentagem)
+  # select(-value) %>% 
+  #   group_by(ISIC, trade_flow) %>% 
+  #   mutate(porcentagem = glue("{porcentagem} %")) %>% 
+  #   pivot_wider(names_from = ISIC, values_from = porcentagem)
+  fun_isic_fat_tabela(fator = `Fator Agregado`)
+
+```
+
+
+```{r}
+fun_variavel(exp_imp, NO_PAIS, filtro = "Alemanha") %>%
+  fun_anos("último") %>% 
+  fun_isic_fat_dados(fator = `ISIC`) %>% 
+  # pivot_wider(names_from = ISIC, values_from = porcentagem)
+  # select(-value) %>% 
+  #   group_by(ISIC, trade_flow) %>% 
+  #   mutate(porcentagem = glue("{porcentagem} %")) %>% 
+  #   pivot_wider(names_from = ISIC, values_from = porcentagem)
+  fun_isic_fat_tabela(fator = `ISIC`)
+
+```
+

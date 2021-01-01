@@ -1,0 +1,284 @@
+---
+title: "Tutorial - Comércio Internacional, Brasil - Parte I"
+output: html_notebook
+---
+
+
+```{r setup, include = FALSE}
+
+library(tidyverse)
+library(here)
+
+# knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+
+```
+
+# Leitura de Dados
+
+Os dados de Comércio Exterior que utilizamos estão disponíveis no [site do Ministério da Economia](https://www.gov.br/produtividade-e-comercio-exterior/pt-br/assuntos/comercio-exterior/estatisticas/base-de-dados-bruta). Queremos analisar os últimos 10 anos de comércio brasileiro. Para ler os arquivos, contudo, é preciso antes identificar os arquivos com os dados de exportações e importações. Para isso, usaremos o pacote "fs" com o auxílio do pacote "here". Após fazer o download dos arquivos com os últimos 10 anos de comércio, podemos passar o seguinte código, criando variáveis com os respectivos arquivos.
+
+```{r}
+
+exp_files <- fs::dir_ls(path = here("input", "mdic", "exp"), glob = "*.csv")
+imp_files <- fs::dir_ls(path = here("input", "mdic", "imp"), glob = "*.csv")
+
+```
+
+
+Agora que temos os nomes dos  arquivos, podemos iniciar a leitura dos dados. Essa base de dados é grande, portanto deve haver outras maneiras mais inteligentes de lê-lo. Particularmente, tive dificuldades de incorporar numa base de dados SQL estes dados. A maneira mais clássica e simples de se ler esses dados, contudo, costuma conjugar as funções purr::map_df com a função read_csv2. Contudo, por se tratar de uma base grande, percebi que o pacote **vroom** atendia melhor aos meus  interesses.
+
+O pacote **vroom** é surrealmente rápido. Chega a ser inacreditável. Ele lê arquivos com mais de 2 gigas com a tranquilidade de um senhor aposentado escutando jazz. Eu não sei como isso é possível, mas é real. No código abaixo, lemos primeiro cada um dos arquivos de exportação e importação.
+
+```{r}
+exp <- vroom::vroom(exp_files, col_select = c(CO_ANO, CO_MES, CO_NCM, CO_PAIS, VL_FOB), 
+                    col_types = c(CO_ANO = "i", CO_MES = "i", CO_NCM = "c", CO_PAIS = "c", VL_FOB = "i")) %>%
+  mutate(trade_flow = "exp")
+imp <- vroom::vroom(imp_files, col_select = c(CO_ANO, CO_MES, CO_NCM, CO_PAIS, VL_FOB), 
+                    col_types = c(CO_ANO = "i", CO_MES = "i", CO_NCM = "c", CO_PAIS = "c", VL_FOB = "i")) %>%
+  mutate(trade_flow = "imp")
+
+```
+
+
+Agora que temos cada um dos arquivos de exportações e importações, o trabalho é juntá-los. Isso não é difícil, basta unir as linhas. Após unir as linhas, vamos remover as variáveis antigas porque elas não são mais necessárias. 
+
+```{r}
+
+exp_imp <- bind_rows(exp, imp)
+
+rm(exp, imp)
+
+```
+
+# Transformação dos Dados
+
+## Passagem do NCM ao SH4
+
+### Adicionando novas Colunas à Tabela
+
+Com os dados consolidados numa única variável, precisamos dar início à integração das informações com as referências oferecidas pelo próprio Ministério da Economia. Temos os códigos NCM (Nomenclatura Comum do MERCOSUL), mas ainda nos faltam os nomes dos produtos comercializados, os nomes dos países e outras informações relevantes. A primeira integração que faremos será a partir do arquivo "NCM.csv", também baixado no mesmo site em que o Ministério da Economia ofereceu todos os dados. Com isso, teremos a correlação possível entre os códigos NCM e SH6, além dos códigos de ISIC e Fator Agregado.
+
+```{r}
+ncm <- read_csv2(here("input", "mdic", "dicionários", "NCM.csv")) %>% 
+  select(CO_NCM, CO_SH6, CO_FAT_AGREG, CO_ISIC_CLASSE)
+
+exp_imp <- exp_imp %>%
+  left_join(ncm)
+
+exp_imp
+```
+
+Os dados iniciais, baseados em NCM, não são tão úteis porque são tão dispersos que dificultam a interpretação das informações. Queremos trabalhar com dados um pouco mais agregados, utilizando os códigos do Sistema Harmonizado (SH) com 4 dígitos. Com isso, acreditamos que poderemos ter uma boa avaliação do comércio brasileiro. Para realizar esse passo, contudo, ainda precisamos agregar outros dados a partir do arquivo "NCM_SH.csv".
+
+A partir da agregação anterior, tivemos acesso à coluna CO_SH6. Essa coluna servirá de referência para descobrirmos o código em SH4 de cada um dos produtos.
+
+```{r}
+ncm_sh <- read_csv2(here("input", "mdic", "dicionários", "NCM_SH.csv"), locale = locale(encoding = "ISO-8859-1")) %>% 
+  select(CO_SH6, CO_SH4, NO_SH4_POR)
+
+exp_imp <- exp_imp %>%
+  left_join(ncm_sh)
+
+exp_imp
+
+```
+
+Por fim, precisamos apenas de três joins: aquele no qual pegamos os nomes dos países, aquele no qual pegamos o nome dos produtos em SH4 e aquele a partir do qual descobrimos o nome do Fator Agregado. Farei os três joins de uma só vez.
+
+```{r}
+pais <- read_csv2(here("input", "mdic", "dicionários", "PAIS.csv"), locale = locale(encoding = "ISO-8859-1")) %>%
+  select(CO_PAIS, NO_PAIS)
+ncm_isic <- read_csv2(here("input", "mdic", "dicionários", "NCM_ISIC.csv"), locale = locale(encoding = "ISO-8859-1")) %>%
+  select(CO_ISIC_CLASSE, NO_ISIC_SECAO)
+
+exp_imp <- exp_imp %>% 
+  left_join(pais) %>%
+  left_join(ncm_isic) %>%
+  mutate(NO_FAT_AGREG = case_when(str_detect(CO_FAT_AGREG, "01") ~ "Produtos Básicos",
+                                    str_detect(CO_FAT_AGREG, "02") ~ "Produtos Semimanufaturados",
+                                    str_detect(CO_FAT_AGREG, "03") ~ "Produtos Manufaturados",
+                                    str_detect(CO_FAT_AGREG, "04") ~ "Transações Especiais",
+                                    str_detect(CO_FAT_AGREG, "05") ~ "Consumo de Bordo",
+                                    str_detect(CO_FAT_AGREG, "06") ~ "Reexportação",
+                                    TRUE ~ "Não identificado")) %>% 
+  rename(fator_agregado = `Fator Agregado`)
+  
+
+exp_imp
+  
+
+```
+
+### Resumindo os Dados
+
+A variável exp_imp é muito grande (ultrapassa dois Gigas). O objetivo agora é agregar os dados em torno do SH4 e não mais em NCM. Com isso, teremos uma base de dados bem mais compacta para trabalhar. Não queremos perder dados de Ano, Mês, Países e de direção do comércio, por isso vamos acrescentar essas variáveis no agrupamento. Além disso, não queremos perder os dados relacionados ao ISIC e ao Fator Agregado, por isso também vamos adicioná-los.
+
+Além disso, vou descumprir um princípio básico do tratamento de dados por aqui, mas é por uma boa causa. No nosso relatório, iremos trabalhar com duas análises distintas: por um lado, queremos os dados de comércio divididos por ano; do outro lado, queremos a análise do ano atual, sempre incompleto da perspectiva de meses. No primeiro caso, os meses são irrelevantes - trabalhamos apenas com anos. No segundo caso, nos importa tanto os anos quanto os meses. 
+
+Por uma questão de praticidade, dividirei em duas bases de dados: uma na qual o mês é relevante e outra na qual queremos apenas os anos. 
+
+1. A base exp_imp_mes tomará por referência o **mês atual** e comparará o ano atual com os anos anteriores até o limite do **mês atual**. Se estamos no mês de março, veremos a comparação dos últimos 10 anos, com informações disponíveis até o mês de março.
+
+2. A base exp_imp tomará por referência o **último ano completo anterior**. Se estamos no ano de 2021, nossa análise se limitará até o ano de 2020.
+
+Para identificar o último mês, precisamos encontrar de maneira automatizada o código do **último mês no último ano da base de dados**. Para isso, eu realizei duas filtragens: primeiro eu filtrei apenas o último ano com a função max(CO_ANO). Depois, filtrei a coluna dos meses com a mesma função max(CO_MES). Em seguida, passei duas funções muito úteis que costumam ser usadas de maneira conjunta: distinct() (que nos dá apenas resultados únicos) e pull() (que nos retorna o resultado como um vetor). Com essas linhas de código, eu não preciso mudar manualmente o mês de referência.
+
+```{r}
+ultimo_mes <- exp_imp %>%
+  filter(CO_ANO == max(CO_ANO)) %>%
+  select(CO_MES) %>%  
+  filter(CO_MES == max(CO_MES)) %>%
+  distinct() %>%
+  pull(CO_MES)
+```
+
+
+Agora que tenho o mês de referência, eu posso apenas fazer uma filtragem para garantir que nenhum mês acima do mês de referência seja contabilizado. Além disso, eu tento tirar da base de dados todos os resultados nulos da coluna VL_FOB (a coluna que mede o valor de cada transação). Com isso, está praticamente tudo pronto para fechar nosso arquivo final de trabalho. Nossa primeira etapa está quase concluída.
+
+As variáveis que quero trabalhar são: Ano, País, Fluxo de Comércio, Mercadorias em SH4, Fator ISIC e Fator Agregado. Se eu agrupar esses dados e realizar a soma da coluna VL_FOB eu terei todas as informações que quero tomando por referência a SH4. (Se eu quisesse tomar por base outras referências, digamos, como SH6 ou SH2, eu também poderia, bastando apenas selecionar as colunas NO_SH2 ou NO_SH6 no lugar da coluna do SH4). Com isso, as duas bases as tuas bases de dados que temos são as seguintes.
+
+```{r}
+exp_imp_mes <- exp_imp %>%
+  filter(!is.na(VL_FOB)) %>% 
+  filter(CO_MES <= ultimo_mes) %>% 
+  group_by(CO_ANO, NO_PAIS, trade_flow, NO_SH4_POR, ISIC, `Fator Agregado`) %>%
+  summarise(value = sum(VL_FOB)) %>%
+  ungroup()
+
+exp_imp <- exp_imp %>%
+  # group_by(CO_ANO, CO_PAIS, trade_flow, CO_SH4) %>%
+  group_by(CO_ANO, NO_PAIS, trade_flow, NO_SH4_POR, NO_ISIC_SECAO, fator_agregado) %>%
+  summarise(value = sum(VL_FOB)) %>%
+  ungroup()
+
+```
+
+A vantagem de realizar essa agregação em SH4 ou em SH2 é que, assim, a base de dados fica muito mais leve. Das próximas vezes, enquanto os dados não forem atualizados, podemos usar apenas os dados já trabalhados. Para isso, precisamos apenas consolidar os dados em um novo arquivo csv. Eu gosto da função vroom_write para fazer isso.
+
+```{r}
+
+vroom::vroom_write(exp_imp_mes, here("input", "mdic", "exp_imp_mes.csv"))
+vroom::vroom_write(exp_imp, here("input", "mdic", "exp_imp.csv"))
+
+```
+
+# Próximas etapas
+
+O objetivo desse programa é construir, automaticamente, os relatórios do comércio bilateral do Brasil com todos os países disponíveis na base de dados do Ministério da Economia. Assim, esta primeira etapa serviu apenas para construir a base de dados necessária de tal projeto.
+
+Nas próximas etapas, identificaremos as primeiras informações básicas do relatório. Tentaremos descobrir os principais parceiros comerciais do Brasil, os principais produtos comercializados e as interações entre as duas dimensões: por um lado os parceiros, por outro os produtos. Mais tarde, tentaremos construir um esqueleto para que a análise de produtos e países seja feita de maneira automatizada a partir da base de dados do Ministério da Economia.
+
+
+
+
+
+
+# Construção dos ranqueamentos
+
+Essa parte é um pouco mais complicada. Precisamos de informações que podem eventualmente confundir em função da dupla dimensão dos dados: por um lado, queremos as referências de principais **países** com os quais o Brasil faz comércio. Por outro, queremos as referências do principais **produtos** comercializados.
+
+Além disso, queremos as *relações* entre países e produtos. Por exemplo: queremos saber quais os principais produtos exportados para cada país. Além disso, queremos as informações a respeito desses mesmos produtos em relação aos demais países. Sua cabeça começou a dar nó? A minha também. Vamos tentar esquematizar os dados que queremos. 
+
+Do mais geral ao mais particular, podemos pensar da seguinte maneira. Em primeiro lugar, precisamos entender qual a importância de cada país e cada produto em relação ao *mundo*. Isto é, tendo em comparação o agregado total do comércio do Brasil com todos os países do mundo, quais os principais países e principais produtos exportados?
+
+*Mundo*
+- Principais *países* com os quais o Brasil faz comércio;
+- Principais *produtos* que o Brasil comercializa;
+
+Após identificarmos os dados referentes ao mundo, podemos aprofundar essas informações a partir de cada país e cada produto. Dentro da dimensão bilateral, temos que identificar quais os *produtos* comercializados a cada país. Dentro da dimensão de cada produto, queremos identificar quais os principais *países* para o qual Brasil exporta o produto em questão.
+
+*Países*
+- Principais *produtos* comercializados ao país
+
+*Produtos*
+- Principais *países* com os quais o Brasil comercializa o produto
+
+Temos, portanto, quatro colunas a serem acrescentadas e calculadas em nossa planilha:
+
+1. Principais *países em relação ao mundo* com os quais o Brasil faz comércio;
+2. Principais *produtos comercializados em relação ao mundo*;
+3. Principais *produtos em relação a um país* com o qual o Brasil faz comércio;
+4. Principais *países em relação a um produto* comercializado;
+
+Além disso, há uma dificuldade. Em nosso relatório, queremos informações em relação a um *ano em específico*, mas também queremos informações sobre *o ano corrente*. Isto é: precisamos de informações, por exemplo, entre os meses de janeiro e junho - isso para cada uma das colunas, ao longo de todos os anos. Portanto, o procedimento deve ser feito tanto na base de dados em relação ao ano completo, quanto ao ano corrente (baseada nos meses). Cada uma das colunas conterá os dados previamente - por ano e por mês.
+
+Agora que sabemos exatamente os dados que queremos, as coisas ficam _um pouco_ mais fáceis.
+
+A primeira coluna a ser adicionada é a mais simples. Queremos agregar os principais países para os quais o Brasil faz comércio. Vamos fazer isso por ano e, depois, por mês. Como não nos importa, nesse momento, quais produtos serão comercializados (queremos apenas o agregado total das exportações e o agregado total das importações), podemos apenas agregar a coluna de Ano (CO_ANO), de fluxo de comercio (trade_flow) e do País (CO_PAIS).
+
+Além disso, não queremos perder dados. Por isso, não usaremos o summarise. Adicionaremos apenas uma coluna com o total do comércio. Em vez de summarise, usaremos a função "mutate".
+
+### Países em Relação ao Mundo
+
+```{r}
+exp_imp <- exp_imp %>%
+  group_by(CO_ANO, trade_flow, NO_PAIS) %>%
+  mutate(paises_mundo_ano = sum(value)) %>%
+  ungroup()
+```
+
+
+Temos, agora, os dados de comércio, para cada país, por ano. Devemos fazer o mesmo para a referência mensal. Isto é: se, na referência paises_mundo_ano estávamos em busca de anos completos, agora precisamos identificar qual o ano e o mês em que *estamos nesse exato momento*. O mês limite para avaliação, portanto, será diferente a depender do momento em que o cálculo estiver sendo feito. Precisamos identificar este mês.
+
+```{r}
+
+ultimo_mes <- exp_imp_mes %>%
+  filter(CO_ANO == max(CO_ANO)) %>%
+  select(CO_MES) %>%  
+  filter(CO_MES == max(CO_MES)) %>%
+  distinct() %>%
+  pull(CO_MES)
+
+```
+
+Com o último mês do último ano identificado, podemos tomar por base esse último mês para fazermos os cálculos necessários. Queremos analisar o ano corrente, portanto devemos delimitar o último mês atual em toda a base de dados. Ao delimitarmos o último mês, podemos analisar todos os anos da mesma maneira que fizemos anteriormente quando o parâmetro de base era o ano completo.
+
+```{r}
+
+exp_imp_mes <- exp_imp_mes %>%
+  filter(CO_MES <= ultimo_mes) %>% 
+  group_by(CO_ANO, trade_flow, NO_PAIS) %>%
+  mutate(paises_mundo_mes = sum(value)) %>%
+  ungroup()
+
+```
+
+Agora que sabemos que sabemos quais os principais destinos e origens de importações do Brasil, tanto por ano, quanto em relação aos meses correntes, podemos fazer os mesmos cálculos tomando por referência não mais os países, mas os produtos.
+
+### Produtos Comercializados em Relação ao Mundo
+
+O procedimento é o mesmo. Devemos apenas alterar o CO_PAIS por CO_SH4. Farei tudo em uma única tacada para ser mais sucinto.
+
+
+```{r}
+
+exp_imp <- exp_imp %>%
+  group_by(CO_ANO, trade_flow, NO_SH4_POR) %>%
+  mutate(produtos_mundo_ano = sum(value))
+
+exp_imp_mes <- exp_imp_mes %>%
+  group_by(CO_ANO, trade_flow, NO_SH4_POR) %>%
+  mutate(produtos_mundo_mes = sum(value))
+```
+
+### Produtos em Relação a um País
+
+Agora precisamos encontrar, da perspectiva de cada produto, quais os países são os principais destinos de cada um deles. Eu não preciso fazer nenhuma transformação muito clara porque a coluna "value" já indica o produto exportado para cada país, num determinado ano. Uma maneira de descobrir quais são os 10 principais países destino (ou origem) de um determinado produto é usar a função "slice_max" do jeito abaixo. 
+
+```{r}
+exp_imp %>%
+  group_by(CO_ANO, trade_flow, NO_SH4_POR) %>%
+  slice_max(value, n = 10)
+  ungroup()
+  
+```
+
+### Países em Relação a um Produto
+
+Se eu inverter a função acima, eu consigo exatamente o que eu queria, mas em vez de pegar os 10 países destinos de um determinado produto, eu tenho os 10 produtos origens ou destinos de um determinado país
+
+```{r}
+exp_imp %>% 
+  group_by(CO_ANO, trade_flow, NO_PAIS) %>%
+  slice_max(value, n = 10)
+```

@@ -1,0 +1,210 @@
+---
+title: "Tutorial - Comércio Internacional, Brasil - Parte II"
+output: html_notebook
+---
+
+```{r setup, include = FALSE}
+
+library(tidyverse)
+library(here)
+library(scales)
+library(ggthemes)
+library(vroom)
+library(glue)
+
+
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+
+```
+
+# Visualização de Dados
+
+No último tutorial preparamos os dados necessários para começar analisar o comércio internacional brasileiro. A partir de agora, realizaremos testes de visualização. Antes, contudo, precisamos ler os dados. Usaremos a função vroom, do pacote de mesmo nome, porque ela é simplesmente incrível. A vida é muito curta para ler dados lentamente.
+
+```{r}
+
+exp_imp <- vroom::vroom(here("input", "mdic", "exp_imp.csv"))
+exp_imp_mes <- vroom::vroom(here("input", "mdic", "exp_imp_mes.csv")) 
+
+```
+
+A primeira coisa que queremos é analisar o comércio como um todo do Brasil com um determinado país. Vamos supor, para fins deste tutorial, que queremos apenas os dados com a China. (Mais tarde tentaremos generalizar os resultados. Inicialmente, contudo, tentaremos fazer um trabalho de visualização de dados com um único país)
+
+## Fluxo Comercial
+
+### Ajustando os Dados
+
+No nosso objetivo, o primeiro passo é realizar um filtro na base de dados para selecionarmos apenas as linhas relacionadas à China. Para isso, passamos a função do dplyr "filter" com a expressão "NO_PAIS == filtro". Como se pode ver, caso queiramos qualquer outro país a ser selecionado, basta alterar a variável "filtro". Em seguida, agruparemos os dados por ano e por direção de comércio e somaremos o resultado. Como se vê, o resultado são três colunas: uma para ano, outra para fluxo de comércio e outra para o valor exportado ou importado em cada ano.
+
+```{r}
+
+filtro <- "China"
+
+df <- exp_imp %>%
+  filter(NO_PAIS == filtro) %>%
+  # filter(is.na(value)) 
+  group_by(CO_ANO, trade_flow) %>%
+  summarise(value = sum(value))
+
+df
+
+```
+
+O resultado acima é bastante satisfatório mas não nos dá algumas informações bastante importantes: qual o saldo comercial (exportações menos importações) do Brasil com a China e qual a corrente de comércio (exportações mais importações) entre os dois países? Para realizar essa operação, o formato "long", ou "tidy" não é dos melhores. O ideal é somar uma coluna à outra, não é fácil propriamente somar linhas específicas na atual configuração. Para isso, usaremos duas funções bastante importantes: a pivot_wider e a pivot_longer.
+
+Como se pode observar abaixo, queremos que as linhas da variável "trade_flow" se transformem em nomes de colunas. No caso, queremos que a coluna de "exportações" e a coluna de "importações" sejam colunas independentes com valores definidos pela coluna "value". Se cada uma delas for uma coluna distinta, podemos somá-las, subtraí-las, multiplicá-las... vai do seu interesse. No nosso caso, estamos satisfeitos com operações básicas.
+
+```{r}
+
+df <- df %>% 
+  pivot_wider(names_from = trade_flow, values_from = value) 
+
+df
+```
+
+Agora que temos as duas colunas que queremos, precisamos criar as novas duas colunas que buscamos. Para isso, criamos colunas com a função "mutate", também do dplyr. Além disso, vamos alterar o nome das colunas com a função "rename" para que nosso gráfico fique mais bonito lá na frente.
+
+```{r}
+
+df <- df %>% 
+  mutate(Corrente = exp + imp,
+         Saldo = exp - imp) %>%
+  rename(Exportações = exp,
+         Importações = imp)
+
+df
+
+```
+
+Agora temos todas as informações que queremos para fazer um gráfico com o ggplot, pacote do tidyverse absolutamente matador em matéria de visualização de dados. Antes, contudo, precisamos retornar nosso dataframe ao formato tidy. Se, antes, utilizamos a função "pivot_wider", agora usaremos a função inversa, "pivot_longer". Selecionaremos as colunas que queremos que se transformem em linhas (no caso, todas as colunas entre Exportações e Saldo, utilizando o operador ":"), e logo em seguida selecionamos o que devemos fazer com os "valores" de cada uma dessas colunas (no caso, eles voltaram à coluna "value").
+
+
+```{r}
+df <- df %>% 
+  pivot_longer(cols = Exportações:Saldo, names_to = "trade_flow", values_to = "value")
+
+df
+
+```
+
+### Usando o ggplot
+
+Pronto. Finalmente podemos começar a usar o ggplot. Na sintaxe do ggplot, devemos primeiro criar o quadro em branco a partir do qual se deve construir o gráfico chamando a função "ggplot()". Em seguida, chamamos a função geom_qualquercoisa para definir qual figura geométrica queremos que o gráfico utilize. É uma estrutura bastante simples que está representada abaixo. No caso, selecionamos o gráfico de colunas (geom_col). Dentro do geom_col, a função aes() serve para selecionar quais as variáveis que devem ser apresentadas. O eixo X, no gráfico abaixo, está representando os anos (coluna CO_ANO) e o eixo Y representa as quantidades (coluna value). Por fim, a variável "fill", dentro da função "aes()" cumpre a função de pintar de cores diferentes cada tipo de fluxo de comércio (se exportações, importações, corrente ou saldo).
+
+```{r}
+
+df <- df %>% 
+  ggplot() +
+  geom_col(aes(CO_ANO, value, fill = trade_flow))
+
+df
+
+```
+
+Caso quiséssemos, poderíamos terminar nosso trabalho nesse momento. Mas o gráfico está, convenhamos, um tanto quanto feio e, pior ainda, ele não passa informações de maneira clara. Podemos discernir tendências muito evidentes, mas relações internas ao movimento de exportações ou importações não estão fáceis de serem visualizadas. Queremos ter a capacidade de verificar as tendências de cada um dos quatro fluxos de comércio (exp, imp, saldo, corrente) de maneira independente. Para a nossa sorte, o ggplot torna isso muito fácil. Vamos utilizar, no caso, a função facet_wrap() para dividir a visualização de cada uma das variáveis.
+
+
+```{r}
+
+df +
+  facet_wrap(~ trade_flow)
+
+```
+
+Agora está muito melhor, apesar de ainda termos alguns problemas. De todo modo, o gráfico já está numa posição muito mais próxima do nosso objetivo final. Os problemas identificados são: 
+
+1. a ordem do gráfico não está legal. Seria melhor se pudéssemos incluir exportações ao lado das importações, assim como posicionar lado a lado corrente e saldo. 
+
+2. Além disso, o eixo Y está usando notação científica, difícil de entender, e o eixo X está dividindo os números inteiros dos anos. 
+
+3. Há, ainda, uma legenda ao lado completamente desnecessária porque o nome de cada gráfico já nos dá a informação que queremos. 
+
+4. Pra piorar, essas cores são horríveis. 
+
+Vamos tentar solucionar cada um dos problemas, um a um.
+
+Em geral, quando se está operando com variáveis categóricas (isto é, variáveis que não são quantitativas) no R, e queremos ordená-las de alguma maneira, devemos utilizar "fatores". 
+
+Para transformar uma determinada variável em fator, passamos a função "factor" e selecionamos os níveis de ordenamento, no caso "levels". Eu quero que, em primeiro lugar, apareça o gráfico de "Exportações", em segundo lugar o gráfico de "Importações" e assim vai. Além disso, eu faço questão que o eixo X apareça tanto nos gráficos da parte de baixo, quanto da parte de cima. Para realizar essa operação, eu adiciono o parâmetro "scales" com a opção "free_x" que faz justamente isso: torna o eixo X livre e independente da parte de baixo. Vamos ao resultado.
+
+```{r}
+
+df <- df +
+  facet_wrap(~ factor(trade_flow, levels = c("Exportações", "Importações", "Corrente", "Saldo")),
+             scales = "free_x")
+
+df
+
+```
+
+O primeiro passo foi resolvido. Os gráficos estão em ordem. O segundo passo deve ser, então, alterar o formato da escala dos eixos X e Y. Em primeiro lugar, alterar a notação científica do eixo Y que está simplesmente ilegível. Em segundo, não deixar que o ggplot apresente o eixo X em formato não inteiro porque isso não faz sentido. Para isso, utilizaremos duas funções: scale_x_continuous e scale_y_continuous porque nossas duas variáveis são contínuas. No eixo y, utilizaremos a função "label_number_si" para que possamos ler números grandes em formato intuitivo. Além disso, passaremos a função pretty_breaks no parametro "breaks" para que as quebras entre as observações seja feita de maneira bonita e inteligente. Imagina se tivéssemos que selecionar à mão a quantidade de espaços em branco, o número de observações de cada um dos gráficos? Trabalho danado. Muita preguiça. Por sorte, essas duas funções do pacote 'scales' existem para nos salvar.
+
+```{r}
+
+df <- df +
+  scale_y_continuous(labels = label_number_si(accuracy = 0.01), breaks = pretty_breaks()) +
+  scale_x_continuous(breaks = scales::pretty_breaks())
+
+df
+```
+
+Muito melhor, não é mesmo? Ainda temos pequenos problemas: a legenda inútil à direita, o nome dos eixos X e Y e, enfim, essas cores que, convenhamos, estão horríveis. 
+
+O primeiro passo é usar outra função, dessa vez do pacote "ggthemes" que serve para selecionar temas pré-estabelecidos de cores e tudo mais. No meu caso, eu gosto do scale_fill_tableau(). Você pode escolher qualquer um que quiser.
+
+```{r}
+df <- df +
+  scale_fill_tableau()
+
+df
+```
+
+Muito mais bonito, fala sério. Para retirar as duas legendas é mais fácil ainda. Passamos a função theme, também do ggplot, com os seguintes parâmetros abaixo.
+
+```{r}
+df <- df +
+  theme(legend.position = "none", axis.title.x = element_blank(),
+          axis.title.y = element_blank())
+
+df
+```
+
+Por fim, o detalhe final: podemos colocar um título no gráfico e uma legenda abaixo, referenciando a fonte dos dados.
+
+```{r}
+df <- df +
+  labs(title = glue("Brasil-{filtro}, Corrente de Comércio"),
+       caption = "Fonte: Ministério da Economia")
+df
+
+```
+É o gráfico mais lindo do mundo? Certamente não. Mas funciona. Se quisermos juntar todos os passos em um só, o código seria o seguinte:
+
+```{r}
+
+exp_imp %>%
+  filter(NO_PAIS == filtro) %>%
+  group_by(CO_ANO, trade_flow) %>%
+  summarise(value = sum(value)) %>%
+  pivot_wider(names_from = trade_flow, values_from = value) %>%
+  mutate(Corrente = exp + imp,
+         Saldo = exp - imp) %>%
+  rename(Exportações = exp,
+         Importações = imp) %>%
+  pivot_longer(cols = Exportações:Saldo, names_to = "trade_flow", values_to = "value") %>% 
+  ggplot() +
+  geom_col(aes(CO_ANO, value, fill = trade_flow)) +
+  facet_wrap(~ factor(trade_flow, levels = c("Exportações", "Importações", "Corrente", "Saldo")),
+             scales = "free_x") +
+  scale_y_continuous(labels = label_number_si(accuracy = 0.01), breaks = pretty_breaks()) +
+  scale_x_continuous(breaks = scales::pretty_breaks()) +
+  scale_fill_tableau() +
+  theme(legend.position = "none", axis.title.x = element_blank(),
+        axis.title.y = element_blank()) +
+  labs(title = glue("Brasil-{filtro}, Corrente de Comércio"),
+       caption = "Fonte: Ministério da Economia")
+
+
+```
+
+

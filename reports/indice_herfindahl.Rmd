@@ -1,0 +1,208 @@
+---
+title: "Índice Herfindahl-Hirschman"
+output:
+  pdf_document: default
+  html_notebook: default
+header-includes:
+- \usepackage{pdflscape}
+- \newcommand{\blandscape}{\begin{landscape}}
+- \newcommand{\elandscape}{\end{landscape}}
+---
+
+```{r setup, include = FALSE}
+library(tidyverse)
+library(patchwork)
+library(here)
+library(scales)
+library(vroom)
+library(lubridate)
+library(glue)
+
+# ## IMPORTANTE - parte comentada abaixo envolve a criação dos dados necessários para realizar os cálculos
+# 
+# exp <- vroom::vroom(here("input", "mdic", "EXP_COMPLETA.zip"))
+# imp <- vroom::vroom(here("input", "mdic", "IMP_COMPLETA.zip"))
+# # #
+# fun_dados <- function(data) {
+# #
+#   data %>%
+#     group_by(CO_ANO, CO_MES, CO_PAIS) %>%
+#     summarise(value = sum(VL_FOB)) %>%
+#     group_by(CO_ANO) %>%
+#     mutate(total_ano = sum(value)) %>%
+#     # group_by(CO_ANO) %>%
+#     mutate(n = n()) %>%
+#     ungroup() %>%
+#     # filter(trade_flow == "exp") %>%
+#     mutate(porcentagem = value/total_ano) %>%
+#     mutate(HH = porcentagem^2)
+#     # group_by(CO_ANO) %>%
+#     # summarise(HH = sum(HH))
+# }
+# #
+# #
+# 
+# exp_new <- fun_dados(exp)
+# 
+# exp_new %>%
+#   write_csv(here("input", "indice_herfindahl", "exp_new.csv"))
+# 
+# imp_new <- fun_dados(imp)
+# imp_new %>%
+#   write_csv(here("input", "indice_herfindahl", "imp_new.csv"))
+# 
+# exp_files <- fs::dir_ls(here("input", "indice_herfindahl", "mdic_old"), regexp = "EXP")
+# 
+# imp_files <- fs::dir_ls(here("input", "indice_herfindahl", "mdic_old"), regexp = "IMP")
+# 
+# exp <- vroom::vroom(exp_files)
+# imp <- vroom::vroom(imp_files)
+# 
+# fun_dados(imp) %>%
+#   write_csv(here("input", "indice_herfindahl", "imp_old.csv"))
+# 
+# fun_dados(exp) %>%
+#   write_csv(here("input", "indice_herfindahl", "exp_old.csv"))
+
+exp_new <- vroom(here("input", "indice_herfindahl", "exp_new.csv"))
+exp_old <- vroom(here("input", "indice_herfindahl", "exp_old.csv"))
+imp_new <- vroom(here("input", "indice_herfindahl", "imp_new.csv"))
+imp_old <- vroom(here("input", "indice_herfindahl", "imp_old.csv"))
+
+exp <- rbind(exp_new, exp_old)
+imp <- rbind(imp_new, imp_old)
+
+exp_cor <- exp %>%
+  group_by(CO_ANO, CO_PAIS) %>%
+  summarise(value = sum(value)) %>%
+  mutate(trade_flow = "exp")
+
+imp_cor <- imp %>%
+  group_by(CO_ANO, CO_PAIS) %>%
+  summarise(value = sum(value)) %>%
+  mutate(trade_flow = "imp")
+  
+
+cor <- rbind(exp_cor, imp_cor)
+
+ult_mes <- exp %>%
+  select(CO_ANO, CO_MES) %>% 
+  filter(CO_ANO == max(CO_ANO)) %>%
+  filter(CO_MES == max(CO_MES)) %>%
+  distinct() %>%
+  pull()
+
+meses <- tibble(mês = c("Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+           "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro")) %>%
+             mutate(CO_MES = row_number())
+          
+```
+
+Dados entre 1989 e 2020.
+
+\newpage
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+
+
+exp %>%
+  # filter(CO_MES <= ult_mes) %>% 
+  group_by(CO_ANO, CO_MES) %>%
+  summarise(HH = sum(HH)) %>% 
+  unite("Ano", CO_ANO:CO_MES) %>%
+  mutate(Ano = glue("{Ano}_01")) %>% 
+  mutate(Ano = as_date(Ano)) %>% 
+  ggplot() +
+  geom_line(aes(Ano, HH, color = HH), show.legend = F) +
+  geom_smooth(aes(Ano, HH)) +
+  # facet_wra
+  scale_x_date(breaks = breaks_width("2 year"), date_labels = "%Y", name = NULL) +
+  scale_y_continuous(name = "Índice Herfindahl-Hirschman") +
+  labs(title = "Índice Herfindahl-Hirschman (HH)",
+       subtitle = "Destino das Exportações",
+       caption = "Fonte: Ministério da Economia")
+
+```
+
+
+```{r}
+#tentando fazer uma comparação de mês a mês
+
+exp %>%
+  group_by(CO_ANO, CO_MES) %>%
+  summarise(HH = sum(HH)) %>% 
+  mutate(CO_MES = as.integer(CO_MES)) %>% 
+  left_join(meses) %>% 
+  ggplot() +
+  geom_line(aes(CO_ANO, HH, color = HH), show.legend = F) +
+  geom_smooth(aes(CO_ANO, HH)) +
+  facet_wrap(~ factor(mês, levels = c("Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+           "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro")))  +
+  scale_x_continuous(name = NULL) +
+  scale_y_continuous(name = "Índice Herfindahl-Hirschman") +
+  labs(title = "Índice Herfindahl-Hirschman (HH)",
+       subtitle = "Destino das Exportações, mês a mês",
+       caption = "Formulação: MRE, Fonte: Ministério da Economia")
+
+```
+
+```{r, include = FALSE}
+maiores_meses <- exp %>%
+  filter(CO_ANO > 2010) %>% 
+  filter(CO_MES <= ult_mes) %>% 
+  group_by(CO_ANO, CO_MES) %>%
+  summarise(HH = sum(HH)) %>% 
+  group_by(CO_ANO) %>%
+  # arrange(desc(HH)) %>%
+  slice_max(HH, n = 3) %>%
+  mutate(CO_MES = as.integer(CO_MES)) %>%
+  left_join(meses) %>%
+  ungroup() %>%
+  count(mês) %>%
+  arrange(desc(n))
+
+
+```
+
+<!-- Os meses de maior concentração do índice HH do destino das exportações, nos últimos 10 anos, têm sido Maio, Junho e Julho. -->
+
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+
+imp %>% 
+  group_by(CO_ANO) %>%
+  summarise(HH = sum(HH)) %>% 
+  ggplot() +
+  geom_col(aes(CO_ANO, HH, fill = HH), show.legend = F) +
+  scale_x_continuous(breaks = pretty_breaks(), name = NULL) +
+  scale_y_continuous(name = "Índice Herfindahl-Hirschman") +
+  labs(title = "Índice Herfindahl-Hirschman (HH)",
+       subtitle = "Origem das Importações",
+       caption = "Fonte: Ministério da Economia")
+
+
+```
+
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+cor %>%
+  pivot_wider(names_from = trade_flow, values_from = value, values_fill = 0) %>%
+  mutate(cor = (exp + imp)) %>%
+  select(-c(exp, imp)) %>%
+  group_by(CO_ANO) %>%
+  mutate(total_ano = sum(cor)) %>%
+  mutate(porcentagem = cor/total_ano) %>%
+  mutate(HH = porcentagem^2) %>%
+  summarise(HH = sum(HH)) %>%
+  ggplot() +
+  geom_col(aes(CO_ANO, HH, fill = HH), show.legend = F) +
+  scale_x_continuous(breaks = pretty_breaks(), name = NULL) +
+  scale_y_continuous(name = "Índice Herfindahl-Hirschman") +
+  labs(title = "Índice Herfindahl-Hirschman (HH)",
+       subtitle = "Corrente de Comércio",
+       caption = "Fonte: Ministério da Economia")
+
+
+```
+
+

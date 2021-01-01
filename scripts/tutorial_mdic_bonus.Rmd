@@ -1,0 +1,113 @@
+---
+title: "Tutorial - Comércio Internacional, Brasil - Bônus Track"
+output:
+  pdf_document: default
+  html_notebook: default
+---
+
+
+```{r setup, include = FALSE}
+library(tidyverse)
+library(here)
+library(scales)
+library(ggthemes)
+library(glue)
+library(gganimate)
+library(ggrepel)
+
+source(here("scripts", "mdic_funcoes.R"))
+
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+
+Nesse tutorial bônus tentaremos fazer uma visualização sensa em formato gif. Vamos por partes.
+
+
+```{r}
+
+```
+
+
+# países
+
+```{r}
+
+grafico <- exp_imp_mes %>%
+  group_by(CO_ANO, NO_PAIS, trade_flow) %>%
+  summarise(value = sum(value)) %>%
+  pivot_wider(names_from = trade_flow, values_from = value) %>%
+  mutate(corrente = imp + exp,
+         saldo = exp - imp) %>%
+  ungroup() %>% 
+  mutate(label = case_when(NO_PAIS == "China" ~ "China",
+                           NO_PAIS == "Estados Unidos" ~ "Estados Unidos",
+                           NO_PAIS == "Argentina" ~ "Argentina",
+                           NO_PAIS == "Alemanha" ~ "Alemanha",
+                           NO_PAIS == "Japão" ~ "Japão",
+                           NO_PAIS == "Espanha" ~ "Espanha",
+                           NO_PAIS == "Chile" ~ "Chile",
+                           NO_PAIS == "Países Baixos (Holanda)" ~ "Holanda",
+                           TRUE ~ "Outro")) %>% 
+  ggplot(aes(corrente, saldo)) +
+  geom_point(aes(color = NO_PAIS, size = exp, alpha = 0.7)) +
+  theme(legend.position = "none") +
+  transition_states(CO_ANO, transition_length = 5,
+                    state_length = 0,
+                    wrap = T) +
+  geom_label(data = . %>% filter(label != "Outro"),
+             aes(corrente, saldo, label = label)) +
+  geom_hline(aes(yintercept = 0),
+             linetype = "dotted") +
+  scale_size(range = c(0.1, 24)) +
+  scale_y_continuous(labels = label_number_si(),
+                     name = "Saldo Comercial") +
+  scale_x_continuous(labels = label_number_si(),
+                     name = "Corrente de Comércio") +
+  ease_aes('linear') +
+  labs(title = "Comércio brasileiro entre 2010 e 2020",
+       subtitle = 'Ano: {closest_state}',
+       caption = "Fonte: Ministério da Economia")
+
+animate(grafico, renderer = ffmpeg_renderer())
+
+```
+
+# produtos
+
+
+```{r}
+exp_imp_mes %>%
+  filter(trade_flow == "exp") %>%
+  group_by(CO_ANO, NO_SH4_POR) %>%
+  summarise(value = sum(value)) %>%
+  group_by(CO_ANO) %>% 
+  slice_max(value, n = 10) %>%
+  mutate(rank = row_number()) %>% 
+  mutate(NO_SH4_POR = str_sub(NO_SH4_POR, start = 1, end = 25)) %>%
+  ggplot(aes(rank, value)) +
+  geom_point(aes(color = NO_SH4_POR, size = value, alpha = 0.7)) +
+  theme(legend.position = "none") +
+  transition_states(CO_ANO, transition_length = 10,
+                    state_length = 2,
+                    wrap = T) +
+  geom_label_repel(aes(label = NO_SH4_POR), nudge_y = 5) +
+  # geom_label(data = . %>% filter(label != "Outro"),
+             # aes(corrente, saldo, label = label)) +
+  # geom_hline(aes(yintercept = 0),
+             # linetype = "dotted") +
+  scale_size(range = c(0.1, 24)) +
+  scale_y_continuous(labels = label_number_si(),
+                     name = "Exportações em USD") +
+  scale_x_continuous(labels = label_number_si(),
+                     name = "Posição entre os 10 produtos mais exportados") +
+  ease_aes('linear') +
+  labs(title = "Comércio brasileiro entre 2010 e 2020",
+       subtitle = 'Ano: {closest_state}',
+       caption = "Fonte: Ministério da Economia")
+  
+  pivot_wider(names_from = trade_flow, values_from = value)
+```
+
+
+
