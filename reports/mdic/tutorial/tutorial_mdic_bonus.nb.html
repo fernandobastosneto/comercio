@@ -35,7 +35,7 @@
   div.column{display: inline-block; vertical-align: top; width: 50%;}
   div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
   ul.task-list{list-style: none;}
-      </style>
+    </style>
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
@@ -84,6 +84,7 @@ h6 {
   display: none;
 }
 </style>
+
 
 
 
@@ -247,127 +248,44 @@ summary {
 <h1>países</h1>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ3JhZmljb1xuXG5gYGAifQ== -->
-<pre class="r"><code>grafico
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuZ3JhZmljb1xuXG5gYGBcbmBgYCJ9 -->
+<pre class="r"><code>```r
+grafico
 </code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiUmVtb3ZlZCAzMCByb3dzIGNvbnRhaW5pbmcgbWlzc2luZyB2YWx1ZXMgKGdlb21fcG9pbnQpLlJlbW92ZWQgMzAgcm93cyBjb250YWluaW5nIG1pc3NpbmcgdmFsdWVzIChnZW9tX3BvaW50KS5cbiJ9 -->
-<pre><code>Removed 30 rows containing missing values (geom_point).Removed 30 rows containing missing values (geom_point).</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiXG5GcmFtZSAxICgxJSlcbkZyYW1lIDIgKDIlKVxuRnJhbWUgMyAoMyUpXG5GcmFtZSA0ICg0JSlcbkZyYW1lIDUgKDUlKVxuRnJhbWUgNiAoNiUpXG5GcmFtZSA3ICg3JSlcbkZyYW1lIDggKDglKVxuRnJhbWUgOSAoOSUpXG5GcmFtZSAxMCAoMTAlKVxuRnJhbWUgMTEgKDExJSlcbkZyYW1lIDEyICgxMiUpXG5GcmFtZSAxMyAoMTMlKVxuRnJhbWUgMTQgKDE0JSlcbkZyYW1lIDE1ICgxNSUpXG5GcmFtZSAxNiAoMTYlKVxuRnJhbWUgMTcgKDE3JSlcbkZyYW1lIDE4ICgxOCUpXG5GcmFtZSAxOSAoMTklKVxuRnJhbWUgMjAgKDIwJSlcbkZyYW1lIDIxICgyMSUpXG5GcmFtZSAyMiAoMjIlKVxuRnJhbWUgMjMgKDIzJSlcbkZyYW1lIDI0ICgyNCUpXG5GcmFtZSAyNSAoMjUlKVxuRnJhbWUgMjYgKDI2JSlcbkZyYW1lIDI3ICgyNyUpXG5GcmFtZSAyOCAoMjglKVxuRnJhbWUgMjkgKDI5JSlcbkZyYW1lIDMwICgzMCUpXG5GcmFtZSAzMSAoMzElKVxuRnJhbWUgMzIgKDMyJSlcbkZyYW1lIDMzICgzMyUpXG5GcmFtZSAzNCAoMzQlKVxuRnJhbWUgMzUgKDM1JSlcbkZyYW1lIDM2ICgzNiUpXG5GcmFtZSAzNyAoMzclKVxuRnJhbWUgMzggKDM4JSlcbkZyYW1lIDM5ICgzOSUpXG5GcmFtZSA0MCAoNDAlKVxuRnJhbWUgNDEgKDQxJSlcbkZyYW1lIDQyICg0MiUpXG5GcmFtZSA0MyAoNDMlKVxuRnJhbWUgNDQgKDQ0JSlcbkZyYW1lIDQ1ICg0NSUpXG5GcmFtZSA0NiAoNDYlKVxuRnJhbWUgNDcgKDQ3JSlcbkZyYW1lIDQ4ICg0OCUpXG5GcmFtZSA0OSAoNDklKVxuRnJhbWUgNTAgKDUwJSlcbkZyYW1lIDUxICg1MSUpXG5GcmFtZSA1MiAoNTIlKVxuRnJhbWUgNTMgKDUzJSlcbkZyYW1lIDU0ICg1NCUpXG5GcmFtZSA1NSAoNTUlKVxuRnJhbWUgNTYgKDU2JSlcbkZyYW1lIDU3ICg1NyUpXG5GcmFtZSA1OCAoNTglKVxuRnJhbWUgNTkgKDU5JSlcbkZyYW1lIDYwICg2MCUpXG5GcmFtZSA2MSAoNjElKVxuRnJhbWUgNjIgKDYyJSlcbkZyYW1lIDYzICg2MyUpXG5GcmFtZSA2NCAoNjQlKVxuRnJhbWUgNjUgKDY1JSlcbkZyYW1lIDY2ICg2NiUpXG5GcmFtZSA2NyAoNjclKVxuRnJhbWUgNjggKDY4JSlcbkZyYW1lIDY5ICg2OSUpXG5GcmFtZSA3MCAoNzAlKVxuRnJhbWUgNzEgKDcxJSlcbkZyYW1lIDcyICg3MiUpXG5GcmFtZSA3MyAoNzMlKVxuRnJhbWUgNzQgKDc0JSlcbkZyYW1lIDc1ICg3NSUpXG5GcmFtZSA3NiAoNzYlKVxuRnJhbWUgNzcgKDc3JSlcbkZyYW1lIDc4ICg3OCUpXG5GcmFtZSA3OSAoNzklKVxuRnJhbWUgODAgKDgwJSlcbkZyYW1lIDgxICg4MSUpXG5GcmFtZSA4MiAoODIlKVxuRnJhbWUgODMgKDgzJSlcbkZyYW1lIDg0ICg4NCUpXG5GcmFtZSA4NSAoODUlKVxuRnJhbWUgODYgKDg2JSlcbkZyYW1lIDg3ICg4NyUpXG5GcmFtZSA4OCAoODglKVxuRnJhbWUgODkgKDg5JSlcbkZyYW1lIDkwICg5MCUpXG5GcmFtZSA5MSAoOTElKVxuRnJhbWUgOTIgKDkyJSlcbkZyYW1lIDkzICg5MyUpXG5GcmFtZSA5NCAoOTQlKVxuRnJhbWUgOTUgKDk1JSlcbkZyYW1lIDk2ICg5NiUpXG5GcmFtZSA5NyAoOTclKVxuRnJhbWUgOTggKDk4JSlcbkZyYW1lIDk5ICg5OSUpXG5GcmFtZSAxMDAgKDEwMCUpXG5GaW5hbGl6aW5nIGVuY29kaW5nLi4uIGRvbmUhXG4ifQ== -->
 <pre><code>
-Frame 1 (1%)
-Frame 2 (2%)
-Frame 3 (3%)
-Frame 4 (4%)
-Frame 5 (5%)
-Frame 6 (6%)
-Frame 7 (7%)
-Frame 8 (8%)
-Frame 9 (9%)
-Frame 10 (10%)
-Frame 11 (11%)
-Frame 12 (12%)
-Frame 13 (13%)
-Frame 14 (14%)
-Frame 15 (15%)
-Frame 16 (16%)
-Frame 17 (17%)
-Frame 18 (18%)
-Frame 19 (19%)
-Frame 20 (20%)
-Frame 21 (21%)
-Frame 22 (22%)
-Frame 23 (23%)
-Frame 24 (24%)
-Frame 25 (25%)
-Frame 26 (26%)
-Frame 27 (27%)
-Frame 28 (28%)
-Frame 29 (29%)
-Frame 30 (30%)
-Frame 31 (31%)
-Frame 32 (32%)
-Frame 33 (33%)
-Frame 34 (34%)
-Frame 35 (35%)
-Frame 36 (36%)
-Frame 37 (37%)
-Frame 38 (38%)
-Frame 39 (39%)
-Frame 40 (40%)
-Frame 41 (41%)
-Frame 42 (42%)
-Frame 43 (43%)
-Frame 44 (44%)
-Frame 45 (45%)
-Frame 46 (46%)
-Frame 47 (47%)
-Frame 48 (48%)
-Frame 49 (49%)
-Frame 50 (50%)
-Frame 51 (51%)
-Frame 52 (52%)
-Frame 53 (53%)
-Frame 54 (54%)
-Frame 55 (55%)
-Frame 56 (56%)
-Frame 57 (57%)
-Frame 58 (58%)
-Frame 59 (59%)
-Frame 60 (60%)
-Frame 61 (61%)
-Frame 62 (62%)
-Frame 63 (63%)
-Frame 64 (64%)
-Frame 65 (65%)
-Frame 66 (66%)
-Frame 67 (67%)
-Frame 68 (68%)
-Frame 69 (69%)
-Frame 70 (70%)
-Frame 71 (71%)
-Frame 72 (72%)
-Frame 73 (73%)
-Frame 74 (74%)
-Frame 75 (75%)
-Frame 76 (76%)
-Frame 77 (77%)
-Frame 78 (78%)
-Frame 79 (79%)
-Frame 80 (80%)
-Frame 81 (81%)
-Frame 82 (82%)
-Frame 83 (83%)
-Frame 84 (84%)
-Frame 85 (85%)
-Frame 86 (86%)
-Frame 87 (87%)
-Frame 88 (88%)
-Frame 89 (89%)
-Frame 90 (90%)
-Frame 91 (91%)
-Frame 92 (92%)
-Frame 93 (93%)
-Frame 94 (94%)
-Frame 95 (95%)
-Frame 96 (96%)
-Frame 97 (97%)
-Frame 98 (98%)
-Frame 99 (99%)
-Frame 100 (100%)
-Finalizing encoding... done!</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-<div id="produtos" class="section level1">
-<h1>produtos</h1>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZXhwX2ltcF9tZXMgJT4lXG4gIGZpbHRlcih0cmFkZV9mbG93ID09IFwiZXhwXCIpICU+JVxuICBncm91cF9ieShDT19BTk8sIE5PX1NINF9QT1IpICU+JVxuICBzdW1tYXJpc2UodmFsdWUgPSBzdW0odmFsdWUpKSAlPiVcbiAgZ3JvdXBfYnkoQ09fQU5PKSAlPiUgXG4gIHNsaWNlX21heCh2YWx1ZSwgbiA9IDEwKSAlPiVcbiAgbXV0YXRlKHJhbmsgPSByb3dfbnVtYmVyKCkpICU+JSBcbiAgbXV0YXRlKE5PX1NINF9QT1IgPSBzdHJfc3ViKE5PX1NINF9QT1IsIHN0YXJ0ID0gMSwgZW5kID0gMjUpKSAlPiVcbiAgZ2dwbG90KGFlcyhyYW5rLCB2YWx1ZSkpICtcbiAgZ2VvbV9wb2ludChhZXMoY29sb3IgPSBOT19TSDRfUE9SLCBzaXplID0gdmFsdWUsIGFscGhhID0gMC43KSkgK1xuICB0aGVtZShsZWdlbmQucG9zaXRpb24gPSBcIm5vbmVcIikgK1xuICB0cmFuc2l0aW9uX3N0YXRlcyhDT19BTk8sIHRyYW5zaXRpb25fbGVuZ3RoID0gMTAsXG4gICAgICAgICAgICAgICAgICAgIHN0YXRlX2xlbmd0aCA9IDIsXG4gICAgICAgICAgICAgICAgICAgIHdyYXAgPSBUKSArXG4gIGdlb21fbGFiZWxfcmVwZWwoYWVzKGxhYmVsID0gTk9fU0g0X1BPUiksIG51ZGdlX3kgPSA1KSArXG4gICMgZ2VvbV9sYWJlbChkYXRhID0gLiAlPiUgZmlsdGVyKGxhYmVsICE9IFwiT3V0cm9cIiksXG4gICAgICAgICAgICAgIyBhZXMoY29ycmVudGUsIHNhbGRvLCBsYWJlbCA9IGxhYmVsKSkgK1xuICAjIGdlb21faGxpbmUoYWVzKHlpbnRlcmNlcHQgPSAwKSxcbiAgICAgICAgICAgICAjIGxpbmV0eXBlID0gXCJkb3R0ZWRcIikgK1xuICBzY2FsZV9zaXplKHJhbmdlID0gYygwLjEsIDI0KSkgK1xuICBzY2FsZV95X2NvbnRpbnVvdXMobGFiZWxzID0gbGFiZWxfbnVtYmVyX3NpKCksXG4gICAgICAgICAgICAgICAgICAgICBuYW1lID0gXCJFeHBvcnRhw6fDtWVzIGVtIFVTRFwiKSArXG4gIHNjYWxlX3hfY29udGludW91cyhsYWJlbHMgPSBsYWJlbF9udW1iZXJfc2koKSxcbiAgICAgICAgICAgICAgICAgICAgIG5hbWUgPSBcIlBvc2nDp8OjbyBlbnRyZSBvcyAxMCBwcm9kdXRvcyBtYWlzIGV4cG9ydGFkb3NcIikgK1xuICBlYXNlX2FlcygnbGluZWFyJykgK1xuICBsYWJzKHRpdGxlID0gXCJDb23DqXJjaW8gYnJhc2lsZWlybyBlbnRyZSAyMDEwIGUgMjAyMFwiLFxuICAgICAgIHN1YnRpdGxlID0gJ0Fubzoge2Nsb3Nlc3Rfc3RhdGV9JyxcbiAgICAgICBjYXB0aW9uID0gXCJGb250ZTogTWluaXN0w6lyaW8gZGEgRWNvbm9taWFcIilcblxuYGBgIn0= -->
-<pre class="r"><code>exp_imp_mes %&gt;%
-  filter(trade_flow == &quot;exp&quot;) %&gt;%
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-output-begin eyJkYXRhIjoiUmVtb3ZlZCAzMCByb3dzIGNvbnRhaW5pbmcgbWlzc2luZyB2YWx1ZXMgKGdlb21fcG9pbnQpLlJlbW92ZWQgMzAgcm93cyBjb250YWluaW5nIG1pc3NpbmcgdmFsdWVzIChnZW9tX3BvaW50KS5cblxuRnJhbWUgMSAoMSUpXG5GcmFtZSAyICgyJSlcbkZyYW1lIDMgKDMlKVxuRnJhbWUgNCAoNCUpXG5GcmFtZSA1ICg1JSlcbkZyYW1lIDYgKDYlKVxuRnJhbWUgNyAoNyUpXG5GcmFtZSA4ICg4JSlcbkZyYW1lIDkgKDklKVxuRnJhbWUgMTAgKDEwJSlcbkZyYW1lIDExICgxMSUpXG5GcmFtZSAxMiAoMTIlKVxuRnJhbWUgMTMgKDEzJSlcbkZyYW1lIDE0ICgxNCUpXG5GcmFtZSAxNSAoMTUlKVxuRnJhbWUgMTYgKDE2JSlcbkZyYW1lIDE3ICgxNyUpXG5GcmFtZSAxOCAoMTglKVxuRnJhbWUgMTkgKDE5JSlcbkZyYW1lIDIwICgyMCUpXG5GcmFtZSAyMSAoMjElKVxuRnJhbWUgMjIgKDIyJSlcbkZyYW1lIDIzICgyMyUpXG5GcmFtZSAyNCAoMjQlKVxuRnJhbWUgMjUgKDI1JSlcbkZyYW1lIDI2ICgyNiUpXG5GcmFtZSAyNyAoMjclKVxuRnJhbWUgMjggKDI4JSlcbkZyYW1lIDI5ICgyOSUpXG5GcmFtZSAzMCAoMzAlKVxuRnJhbWUgMzEgKDMxJSlcbkZyYW1lIDMyICgzMiUpXG5GcmFtZSAzMyAoMzMlKVxuRnJhbWUgMzQgKDM0JSlcbkZyYW1lIDM1ICgzNSUpXG5GcmFtZSAzNiAoMzYlKVxuRnJhbWUgMzcgKDM3JSlcbkZyYW1lIDM4ICgzOCUpXG5GcmFtZSAzOSAoMzklKVxuRnJhbWUgNDAgKDQwJSlcbkZyYW1lIDQxICg0MSUpXG5GcmFtZSA0MiAoNDIlKVxuRnJhbWUgNDMgKDQzJSlcbkZyYW1lIDQ0ICg0NCUpXG5GcmFtZSA0NSAoNDUlKVxuRnJhbWUgNDYgKDQ2JSlcbkZyYW1lIDQ3ICg0NyUpXG5GcmFtZSA0OCAoNDglKVxuRnJhbWUgNDkgKDQ5JSlcbkZyYW1lIDUwICg1MCUpXG5GcmFtZSA1MSAoNTElKVxuRnJhbWUgNTIgKDUyJSlcbkZyYW1lIDUzICg1MyUpXG5GcmFtZSA1NCAoNTQlKVxuRnJhbWUgNTUgKDU1JSlcbkZyYW1lIDU2ICg1NiUpXG5GcmFtZSA1NyAoNTclKVxuRnJhbWUgNTggKDU4JSlcbkZyYW1lIDU5ICg1OSUpXG5GcmFtZSA2MCAoNjAlKVxuRnJhbWUgNjEgKDYxJSlcbkZyYW1lIDYyICg2MiUpXG5GcmFtZSA2MyAoNjMlKVxuRnJhbWUgNjQgKDY0JSlcbkZyYW1lIDY1ICg2NSUpXG5GcmFtZSA2NiAoNjYlKVxuRnJhbWUgNjcgKDY3JSlcbkZyYW1lIDY4ICg2OCUpXG5GcmFtZSA2OSAoNjklKVxuRnJhbWUgNzAgKDcwJSlcbkZyYW1lIDcxICg3MSUpXG5GcmFtZSA3MiAoNzIlKVxuRnJhbWUgNzMgKDczJSlcbkZyYW1lIDc0ICg3NCUpXG5GcmFtZSA3NSAoNzUlKVxuRnJhbWUgNzYgKDc2JSlcbkZyYW1lIDc3ICg3NyUpXG5GcmFtZSA3OCAoNzglKVxuRnJhbWUgNzkgKDc5JSlcbkZyYW1lIDgwICg4MCUpXG5GcmFtZSA4MSAoODElKVxuRnJhbWUgODIgKDgyJSlcbkZyYW1lIDgzICg4MyUpXG5GcmFtZSA4NCAoODQlKVxuRnJhbWUgODUgKDg1JSlcbkZyYW1lIDg2ICg4NiUpXG5GcmFtZSA4NyAoODclKVxuRnJhbWUgODggKDg4JSlcbkZyYW1lIDg5ICg4OSUpXG5GcmFtZSA5MCAoOTAlKVxuRnJhbWUgOTEgKDkxJSlcbkZyYW1lIDkyICg5MiUpXG5GcmFtZSA5MyAoOTMlKVxuRnJhbWUgOTQgKDk0JSlcbkZyYW1lIDk1ICg5NSUpXG5GcmFtZSA5NiAoOTYlKVxuRnJhbWUgOTcgKDk3JSlcbkZyYW1lIDk4ICg5OCUpXG5GcmFtZSA5OSAoOTklKVxuRnJhbWUgMTAwICgxMDAlKVxuRmluYWxpemluZyBlbmNvZGluZy4uLiBkb25lIVxuIn0= --&gt;
+</code></pre>
+<p>Removed 30 rows containing missing values (geom_point).Removed 30 rows containing missing values (geom_point).</p>
+<p>Frame 1 (1%) Frame 2 (2%) Frame 3 (3%) Frame 4 (4%) Frame 5 (5%) Frame 6 (6%) Frame 7 (7%) Frame 8 (8%) Frame 9 (9%) Frame 10 (10%) Frame 11 (11%) Frame 12 (12%) Frame 13 (13%) Frame 14 (14%) Frame 15 (15%) Frame 16 (16%) Frame 17 (17%) Frame 18 (18%) Frame 19 (19%) Frame 20 (20%) Frame 21 (21%) Frame 22 (22%) Frame 23 (23%) Frame 24 (24%) Frame 25 (25%) Frame 26 (26%) Frame 27 (27%) Frame 28 (28%) Frame 29 (29%) Frame 30 (30%) Frame 31 (31%) Frame 32 (32%) Frame 33 (33%) Frame 34 (34%) Frame 35 (35%) Frame 36 (36%) Frame 37 (37%) Frame 38 (38%) Frame 39 (39%) Frame 40 (40%) Frame 41 (41%) Frame 42 (42%) Frame 43 (43%) Frame 44 (44%) Frame 45 (45%) Frame 46 (46%) Frame 47 (47%) Frame 48 (48%) Frame 49 (49%) Frame 50 (50%) Frame 51 (51%) Frame 52 (52%) Frame 53 (53%) Frame 54 (54%) Frame 55 (55%) Frame 56 (56%) Frame 57 (57%) Frame 58 (58%) Frame 59 (59%) Frame 60 (60%) Frame 61 (61%) Frame 62 (62%) Frame 63 (63%) Frame 64 (64%) Frame 65 (65%) Frame 66 (66%) Frame 67 (67%) Frame 68 (68%) Frame 69 (69%) Frame 70 (70%) Frame 71 (71%) Frame 72 (72%) Frame 73 (73%) Frame 74 (74%) Frame 75 (75%) Frame 76 (76%) Frame 77 (77%) Frame 78 (78%) Frame 79 (79%) Frame 80 (80%) Frame 81 (81%) Frame 82 (82%) Frame 83 (83%) Frame 84 (84%) Frame 85 (85%) Frame 86 (86%) Frame 87 (87%) Frame 88 (88%) Frame 89 (89%) Frame 90 (90%) Frame 91 (91%) Frame 92 (92%) Frame 93 (93%) Frame 94 (94%) Frame 95 (95%) Frame 96 (96%) Frame 97 (97%) Frame 98 (98%) Frame 99 (99%) Frame 100 (100%) Finalizing encoding… done!</p>
+<pre><code>
+
+
+&lt;!-- rnb-output-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+# produtos
+
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuZXhwX2ltcF9tZXMgJT4lXG4gIGZpbHRlcih0cmFkZV9mbG93ID09IFxcZXhwXFwpICU+JVxuICBncm91cF9ieShDT19BTk8sIE5PX1NINF9QT1IpICU+JVxuICBzdW1tYXJpc2UodmFsdWUgPSBzdW0odmFsdWUpKSAlPiVcbiAgZ3JvdXBfYnkoQ09fQU5PKSAlPiUgXG4gIHNsaWNlX21heCh2YWx1ZSwgbiA9IDEwKSAlPiVcbiAgbXV0YXRlKHJhbmsgPSByb3dfbnVtYmVyKCkpICU+JSBcbiAgbXV0YXRlKE5PX1NINF9QT1IgPSBzdHJfc3ViKE5PX1NINF9QT1IsIHN0YXJ0ID0gMSwgZW5kID0gMjUpKSAlPiVcbiAgZ2dwbG90KGFlcyhyYW5rLCB2YWx1ZSkpICtcbiAgZ2VvbV9wb2ludChhZXMoY29sb3IgPSBOT19TSDRfUE9SLCBzaXplID0gdmFsdWUsIGFscGhhID0gMC43KSkgK1xuICB0aGVtZShsZWdlbmQucG9zaXRpb24gPSBcXG5vbmVcXCkgK1xuICB0cmFuc2l0aW9uX3N0YXRlcyhDT19BTk8sIHRyYW5zaXRpb25fbGVuZ3RoID0gMTAsXG4gICAgICAgICAgICAgICAgICAgIHN0YXRlX2xlbmd0aCA9IDIsXG4gICAgICAgICAgICAgICAgICAgIHdyYXAgPSBUKSArXG4gIGdlb21fbGFiZWxfcmVwZWwoYWVzKGxhYmVsID0gTk9fU0g0X1BPUiksIG51ZGdlX3kgPSA1KSArXG4gICMgZ2VvbV9sYWJlbChkYXRhID0gLiAlPiUgZmlsdGVyKGxhYmVsICE9IFxcT3V0cm9cXCksXG4gICAgICAgICAgICAgIyBhZXMoY29ycmVudGUsIHNhbGRvLCBsYWJlbCA9IGxhYmVsKSkgK1xuICAjIGdlb21faGxpbmUoYWVzKHlpbnRlcmNlcHQgPSAwKSxcbiAgICAgICAgICAgICAjIGxpbmV0eXBlID0gXFxkb3R0ZWRcXCkgK1xuICBzY2FsZV9zaXplKHJhbmdlID0gYygwLjEsIDI0KSkgK1xuICBzY2FsZV95X2NvbnRpbnVvdXMobGFiZWxzID0gbGFiZWxfbnVtYmVyX3NpKCksXG4gICAgICAgICAgICAgICAgICAgICBuYW1lID0gXFxFeHBvcnRhw6fDtWVzIGVtIFVTRFxcKSArXG4gIHNjYWxlX3hfY29udGludW91cyhsYWJlbHMgPSBsYWJlbF9udW1iZXJfc2koKSxcbiAgICAgICAgICAgICAgICAgICAgIG5hbWUgPSBcXFBvc2nDp8OjbyBlbnRyZSBvcyAxMCBwcm9kdXRvcyBtYWlzIGV4cG9ydGFkb3NcXCkgK1xuICBlYXNlX2FlcygnbGluZWFyJykgK1xuICBsYWJzKHRpdGxlID0gXFxDb23DqXJjaW8gYnJhc2lsZWlybyBlbnRyZSAyMDEwIGUgMjAyMFxcLFxuICAgICAgIHN1YnRpdGxlID0gJ0Fubzoge2Nsb3Nlc3Rfc3RhdGV9JyxcbiAgICAgICBjYXB0aW9uID0gXFxGb250ZTogTWluaXN0w6lyaW8gZGEgRWNvbm9taWFcXClcblxuYGBgXG5gYGAifQ== --&gt;
+
+```r
+```r
+exp_imp_mes %&gt;%
+  filter(trade_flow == \exp\) %&gt;%
   group_by(CO_ANO, NO_SH4_POR) %&gt;%
   summarise(value = sum(value)) %&gt;%
   group_by(CO_ANO) %&gt;% 
@@ -376,132 +294,32 @@ Finalizing encoding... done!</code></pre>
   mutate(NO_SH4_POR = str_sub(NO_SH4_POR, start = 1, end = 25)) %&gt;%
   ggplot(aes(rank, value)) +
   geom_point(aes(color = NO_SH4_POR, size = value, alpha = 0.7)) +
-  theme(legend.position = &quot;none&quot;) +
+  theme(legend.position = \none\) +
   transition_states(CO_ANO, transition_length = 10,
                     state_length = 2,
                     wrap = T) +
   geom_label_repel(aes(label = NO_SH4_POR), nudge_y = 5) +
-  # geom_label(data = . %&gt;% filter(label != &quot;Outro&quot;),
+  # geom_label(data = . %&gt;% filter(label != \Outro\),
              # aes(corrente, saldo, label = label)) +
   # geom_hline(aes(yintercept = 0),
-             # linetype = &quot;dotted&quot;) +
+             # linetype = \dotted\) +
   scale_size(range = c(0.1, 24)) +
   scale_y_continuous(labels = label_number_si(),
-                     name = &quot;Exportações em USD&quot;) +
+                     name = \Exportações em USD\) +
   scale_x_continuous(labels = label_number_si(),
-                     name = &quot;Posição entre os 10 produtos mais exportados&quot;) +
+                     name = \Posição entre os 10 produtos mais exportados\) +
   ease_aes(&#39;linear&#39;) +
-  labs(title = &quot;Comércio brasileiro entre 2010 e 2020&quot;,
+  labs(title = \Comércio brasileiro entre 2010 e 2020\,
        subtitle = &#39;Ano: {closest_state}&#39;,
-       caption = &quot;Fonte: Ministério da Economia&quot;)
+       caption = \Fonte: Ministério da Economia\)
 </code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiYHN1bW1hcmlzZSgpYCByZWdyb3VwaW5nIG91dHB1dCBieSAnQ09fQU5PJyAob3ZlcnJpZGUgd2l0aCBgLmdyb3Vwc2AgYXJndW1lbnQpXG4ifQ== -->
-<pre><code>`summarise()` regrouping output by &#39;CO_ANO&#39; (override with `.groups` argument)</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiXG5GcmFtZSAxICgxJSlcbkZyYW1lIDIgKDIlKVxuRnJhbWUgMyAoMyUpXG5GcmFtZSA0ICg0JSlcbkZyYW1lIDUgKDUlKVxuRnJhbWUgNiAoNiUpXG5GcmFtZSA3ICg3JSlcbkZyYW1lIDggKDglKVxuRnJhbWUgOSAoOSUpXG5GcmFtZSAxMCAoMTAlKVxuRnJhbWUgMTEgKDExJSlcbkZyYW1lIDEyICgxMiUpXG5GcmFtZSAxMyAoMTMlKVxuRnJhbWUgMTQgKDE0JSlcbkZyYW1lIDE1ICgxNSUpXG5GcmFtZSAxNiAoMTYlKVxuRnJhbWUgMTcgKDE3JSlcbkZyYW1lIDE4ICgxOCUpXG5GcmFtZSAxOSAoMTklKVxuRnJhbWUgMjAgKDIwJSlcbkZyYW1lIDIxICgyMSUpXG5GcmFtZSAyMiAoMjIlKVxuRnJhbWUgMjMgKDIzJSlcbkZyYW1lIDI0ICgyNCUpXG5GcmFtZSAyNSAoMjUlKVxuRnJhbWUgMjYgKDI2JSlcbkZyYW1lIDI3ICgyNyUpXG5GcmFtZSAyOCAoMjglKVxuRnJhbWUgMjkgKDI5JSlcbkZyYW1lIDMwICgzMCUpXG5GcmFtZSAzMSAoMzElKVxuRnJhbWUgMzIgKDMyJSlcbkZyYW1lIDMzICgzMyUpXG5GcmFtZSAzNCAoMzQlKVxuRnJhbWUgMzUgKDM1JSlcbkZyYW1lIDM2ICgzNiUpXG5GcmFtZSAzNyAoMzclKVxuRnJhbWUgMzggKDM4JSlcbkZyYW1lIDM5ICgzOSUpXG5GcmFtZSA0MCAoNDAlKVxuRnJhbWUgNDEgKDQxJSlcbkZyYW1lIDQyICg0MiUpXG5GcmFtZSA0MyAoNDMlKVxuRnJhbWUgNDQgKDQ0JSlcbkZyYW1lIDQ1ICg0NSUpXG5GcmFtZSA0NiAoNDYlKVxuRnJhbWUgNDcgKDQ3JSlcbkZyYW1lIDQ4ICg0OCUpXG5GcmFtZSA0OSAoNDklKVxuRnJhbWUgNTAgKDUwJSlcbkZyYW1lIDUxICg1MSUpXG5GcmFtZSA1MiAoNTIlKVxuRnJhbWUgNTMgKDUzJSlcbkZyYW1lIDU0ICg1NCUpXG5GcmFtZSA1NSAoNTUlKVxuRnJhbWUgNTYgKDU2JSlcbkZyYW1lIDU3ICg1NyUpXG5GcmFtZSA1OCAoNTglKVxuRnJhbWUgNTkgKDU5JSlcbkZyYW1lIDYwICg2MCUpXG5GcmFtZSA2MSAoNjElKVxuRnJhbWUgNjIgKDYyJSlcbkZyYW1lIDYzICg2MyUpXG5GcmFtZSA2NCAoNjQlKVxuRnJhbWUgNjUgKDY1JSlcbkZyYW1lIDY2ICg2NiUpXG5GcmFtZSA2NyAoNjclKVxuRnJhbWUgNjggKDY4JSlcbkZyYW1lIDY5ICg2OSUpXG5GcmFtZSA3MCAoNzAlKVxuRnJhbWUgNzEgKDcxJSlcbkZyYW1lIDcyICg3MiUpXG5GcmFtZSA3MyAoNzMlKVxuRnJhbWUgNzQgKDc0JSlcbkZyYW1lIDc1ICg3NSUpXG5GcmFtZSA3NiAoNzYlKVxuRnJhbWUgNzcgKDc3JSlcbkZyYW1lIDc4ICg3OCUpXG5GcmFtZSA3OSAoNzklKVxuRnJhbWUgODAgKDgwJSlcbkZyYW1lIDgxICg4MSUpXG5GcmFtZSA4MiAoODIlKVxuRnJhbWUgODMgKDgzJSlcbkZyYW1lIDg0ICg4NCUpXG5GcmFtZSA4NSAoODUlKVxuRnJhbWUgODYgKDg2JSlcbkZyYW1lIDg3ICg4NyUpXG5GcmFtZSA4OCAoODglKVxuRnJhbWUgODkgKDg5JSlcbkZyYW1lIDkwICg5MCUpXG5GcmFtZSA5MSAoOTElKVxuRnJhbWUgOTIgKDkyJSlcbkZyYW1lIDkzICg5MyUpXG5GcmFtZSA5NCAoOTQlKVxuRnJhbWUgOTUgKDk1JSlcbkZyYW1lIDk2ICg5NiUpXG5GcmFtZSA5NyAoOTclKVxuRnJhbWUgOTggKDk4JSlcbkZyYW1lIDk5ICg5OSUpXG5GcmFtZSAxMDAgKDEwMCUpXG5GaW5hbGl6aW5nIGVuY29kaW5nLi4uIGRvbmUhXG4ifQ== -->
 <pre><code>
-Frame 1 (1%)
-Frame 2 (2%)
-Frame 3 (3%)
-Frame 4 (4%)
-Frame 5 (5%)
-Frame 6 (6%)
-Frame 7 (7%)
-Frame 8 (8%)
-Frame 9 (9%)
-Frame 10 (10%)
-Frame 11 (11%)
-Frame 12 (12%)
-Frame 13 (13%)
-Frame 14 (14%)
-Frame 15 (15%)
-Frame 16 (16%)
-Frame 17 (17%)
-Frame 18 (18%)
-Frame 19 (19%)
-Frame 20 (20%)
-Frame 21 (21%)
-Frame 22 (22%)
-Frame 23 (23%)
-Frame 24 (24%)
-Frame 25 (25%)
-Frame 26 (26%)
-Frame 27 (27%)
-Frame 28 (28%)
-Frame 29 (29%)
-Frame 30 (30%)
-Frame 31 (31%)
-Frame 32 (32%)
-Frame 33 (33%)
-Frame 34 (34%)
-Frame 35 (35%)
-Frame 36 (36%)
-Frame 37 (37%)
-Frame 38 (38%)
-Frame 39 (39%)
-Frame 40 (40%)
-Frame 41 (41%)
-Frame 42 (42%)
-Frame 43 (43%)
-Frame 44 (44%)
-Frame 45 (45%)
-Frame 46 (46%)
-Frame 47 (47%)
-Frame 48 (48%)
-Frame 49 (49%)
-Frame 50 (50%)
-Frame 51 (51%)
-Frame 52 (52%)
-Frame 53 (53%)
-Frame 54 (54%)
-Frame 55 (55%)
-Frame 56 (56%)
-Frame 57 (57%)
-Frame 58 (58%)
-Frame 59 (59%)
-Frame 60 (60%)
-Frame 61 (61%)
-Frame 62 (62%)
-Frame 63 (63%)
-Frame 64 (64%)
-Frame 65 (65%)
-Frame 66 (66%)
-Frame 67 (67%)
-Frame 68 (68%)
-Frame 69 (69%)
-Frame 70 (70%)
-Frame 71 (71%)
-Frame 72 (72%)
-Frame 73 (73%)
-Frame 74 (74%)
-Frame 75 (75%)
-Frame 76 (76%)
-Frame 77 (77%)
-Frame 78 (78%)
-Frame 79 (79%)
-Frame 80 (80%)
-Frame 81 (81%)
-Frame 82 (82%)
-Frame 83 (83%)
-Frame 84 (84%)
-Frame 85 (85%)
-Frame 86 (86%)
-Frame 87 (87%)
-Frame 88 (88%)
-Frame 89 (89%)
-Frame 90 (90%)
-Frame 91 (91%)
-Frame 92 (92%)
-Frame 93 (93%)
-Frame 94 (94%)
-Frame 95 (95%)
-Frame 96 (96%)
-Frame 97 (97%)
-Frame 98 (98%)
-Frame 99 (99%)
-Frame 100 (100%)
-Finalizing encoding... done!</code></pre>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-output-begin eyJkYXRhIjoiYHN1bW1hcmlzZSgpYCByZWdyb3VwaW5nIG91dHB1dCBieSAnQ09fQU5PJyAob3ZlcnJpZGUgd2l0aCBgLmdyb3Vwc2AgYXJndW1lbnQpXG5cbkZyYW1lIDEgKDElKVxuRnJhbWUgMiAoMiUpXG5GcmFtZSAzICgzJSlcbkZyYW1lIDQgKDQlKVxuRnJhbWUgNSAoNSUpXG5GcmFtZSA2ICg2JSlcbkZyYW1lIDcgKDclKVxuRnJhbWUgOCAoOCUpXG5GcmFtZSA5ICg5JSlcbkZyYW1lIDEwICgxMCUpXG5GcmFtZSAxMSAoMTElKVxuRnJhbWUgMTIgKDEyJSlcbkZyYW1lIDEzICgxMyUpXG5GcmFtZSAxNCAoMTQlKVxuRnJhbWUgMTUgKDE1JSlcbkZyYW1lIDE2ICgxNiUpXG5GcmFtZSAxNyAoMTclKVxuRnJhbWUgMTggKDE4JSlcbkZyYW1lIDE5ICgxOSUpXG5GcmFtZSAyMCAoMjAlKVxuRnJhbWUgMjEgKDIxJSlcbkZyYW1lIDIyICgyMiUpXG5GcmFtZSAyMyAoMjMlKVxuRnJhbWUgMjQgKDI0JSlcbkZyYW1lIDI1ICgyNSUpXG5GcmFtZSAyNiAoMjYlKVxuRnJhbWUgMjcgKDI3JSlcbkZyYW1lIDI4ICgyOCUpXG5GcmFtZSAyOSAoMjklKVxuRnJhbWUgMzAgKDMwJSlcbkZyYW1lIDMxICgzMSUpXG5GcmFtZSAzMiAoMzIlKVxuRnJhbWUgMzMgKDMzJSlcbkZyYW1lIDM0ICgzNCUpXG5GcmFtZSAzNSAoMzUlKVxuRnJhbWUgMzYgKDM2JSlcbkZyYW1lIDM3ICgzNyUpXG5GcmFtZSAzOCAoMzglKVxuRnJhbWUgMzkgKDM5JSlcbkZyYW1lIDQwICg0MCUpXG5GcmFtZSA0MSAoNDElKVxuRnJhbWUgNDIgKDQyJSlcbkZyYW1lIDQzICg0MyUpXG5GcmFtZSA0NCAoNDQlKVxuRnJhbWUgNDUgKDQ1JSlcbkZyYW1lIDQ2ICg0NiUpXG5GcmFtZSA0NyAoNDclKVxuRnJhbWUgNDggKDQ4JSlcbkZyYW1lIDQ5ICg0OSUpXG5GcmFtZSA1MCAoNTAlKVxuRnJhbWUgNTEgKDUxJSlcbkZyYW1lIDUyICg1MiUpXG5GcmFtZSA1MyAoNTMlKVxuRnJhbWUgNTQgKDU0JSlcbkZyYW1lIDU1ICg1NSUpXG5GcmFtZSA1NiAoNTYlKVxuRnJhbWUgNTcgKDU3JSlcbkZyYW1lIDU4ICg1OCUpXG5GcmFtZSA1OSAoNTklKVxuRnJhbWUgNjAgKDYwJSlcbkZyYW1lIDYxICg2MSUpXG5GcmFtZSA2MiAoNjIlKVxuRnJhbWUgNjMgKDYzJSlcbkZyYW1lIDY0ICg2NCUpXG5GcmFtZSA2NSAoNjUlKVxuRnJhbWUgNjYgKDY2JSlcbkZyYW1lIDY3ICg2NyUpXG5GcmFtZSA2OCAoNjglKVxuRnJhbWUgNjkgKDY5JSlcbkZyYW1lIDcwICg3MCUpXG5GcmFtZSA3MSAoNzElKVxuRnJhbWUgNzIgKDcyJSlcbkZyYW1lIDczICg3MyUpXG5GcmFtZSA3NCAoNzQlKVxuRnJhbWUgNzUgKDc1JSlcbkZyYW1lIDc2ICg3NiUpXG5GcmFtZSA3NyAoNzclKVxuRnJhbWUgNzggKDc4JSlcbkZyYW1lIDc5ICg3OSUpXG5GcmFtZSA4MCAoODAlKVxuRnJhbWUgODEgKDgxJSlcbkZyYW1lIDgyICg4MiUpXG5GcmFtZSA4MyAoODMlKVxuRnJhbWUgODQgKDg0JSlcbkZyYW1lIDg1ICg4NSUpXG5GcmFtZSA4NiAoODYlKVxuRnJhbWUgODcgKDg3JSlcbkZyYW1lIDg4ICg4OCUpXG5GcmFtZSA4OSAoODklKVxuRnJhbWUgOTAgKDkwJSlcbkZyYW1lIDkxICg5MSUpXG5GcmFtZSA5MiAoOTIlKVxuRnJhbWUgOTMgKDkzJSlcbkZyYW1lIDk0ICg5NCUpXG5GcmFtZSA5NSAoOTUlKVxuRnJhbWUgOTYgKDk2JSlcbkZyYW1lIDk3ICg5NyUpXG5GcmFtZSA5OCAoOTglKVxuRnJhbWUgOTkgKDk5JSlcbkZyYW1lIDEwMCAoMTAwJSlcbkZpbmFsaXppbmcgZW5jb2RpbmcuLi4gZG9uZSFcbiJ9 --&gt;
+</code></pre>
+<p><code>summarise()</code> regrouping output by ‘CO_ANO’ (override with <code>.groups</code> argument)</p>
+<p>Frame 1 (1%) Frame 2 (2%) Frame 3 (3%) Frame 4 (4%) Frame 5 (5%) Frame 6 (6%) Frame 7 (7%) Frame 8 (8%) Frame 9 (9%) Frame 10 (10%) Frame 11 (11%) Frame 12 (12%) Frame 13 (13%) Frame 14 (14%) Frame 15 (15%) Frame 16 (16%) Frame 17 (17%) Frame 18 (18%) Frame 19 (19%) Frame 20 (20%) Frame 21 (21%) Frame 22 (22%) Frame 23 (23%) Frame 24 (24%) Frame 25 (25%) Frame 26 (26%) Frame 27 (27%) Frame 28 (28%) Frame 29 (29%) Frame 30 (30%) Frame 31 (31%) Frame 32 (32%) Frame 33 (33%) Frame 34 (34%) Frame 35 (35%) Frame 36 (36%) Frame 37 (37%) Frame 38 (38%) Frame 39 (39%) Frame 40 (40%) Frame 41 (41%) Frame 42 (42%) Frame 43 (43%) Frame 44 (44%) Frame 45 (45%) Frame 46 (46%) Frame 47 (47%) Frame 48 (48%) Frame 49 (49%) Frame 50 (50%) Frame 51 (51%) Frame 52 (52%) Frame 53 (53%) Frame 54 (54%) Frame 55 (55%) Frame 56 (56%) Frame 57 (57%) Frame 58 (58%) Frame 59 (59%) Frame 60 (60%) Frame 61 (61%) Frame 62 (62%) Frame 63 (63%) Frame 64 (64%) Frame 65 (65%) Frame 66 (66%) Frame 67 (67%) Frame 68 (68%) Frame 69 (69%) Frame 70 (70%) Frame 71 (71%) Frame 72 (72%) Frame 73 (73%) Frame 74 (74%) Frame 75 (75%) Frame 76 (76%) Frame 77 (77%) Frame 78 (78%) Frame 79 (79%) Frame 80 (80%) Frame 81 (81%) Frame 82 (82%) Frame 83 (83%) Frame 84 (84%) Frame 85 (85%) Frame 86 (86%) Frame 87 (87%) Frame 88 (88%) Frame 89 (89%) Frame 90 (90%) Frame 91 (91%) Frame 92 (92%) Frame 93 (93%) Frame 94 (94%) Frame 95 (95%) Frame 96 (96%) Frame 97 (97%) Frame 98 (98%) Frame 99 (99%) Frame 100 (100%) Finalizing encoding… done! ```</p>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
@@ -518,7 +336,7 @@ Finalizing encoding... done!</code></pre>
 
 // add bootstrap table styles to pandoc tables
 function bootstrapStylePandocTables() {
-  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
 }
 $(document).ready(function () {
   bootstrapStylePandocTables();
