@@ -1,6 +1,15 @@
 ---
-title: "Tutorial - Comércio Internacional, Brasil - Parte II"
-output: html_notebook
+title: "Tutorial - Dados Comerciais Brasileiros, Parte II"
+description: |
+  ggplot2 - fluxo de comércio e visualisação de dados
+author:
+  - name: Fernando Bastos
+    affiliation: Diplomata, Ministério das Relações Exteriores
+date: "`r Sys.Date()`"
+output: 
+  distill::distill_article:
+    toc: true
+    toc_depth: 3
 ---
 
 ```{r setup, include = FALSE}
@@ -17,9 +26,13 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 
 ```
 
-# Visualização de Dados
+# Objetivo
 
-No último tutorial preparamos os dados necessários para começar analisar o comércio internacional brasileiro. A partir de agora, realizaremos testes de visualização. Antes, contudo, precisamos ler os dados. Usaremos a função vroom, do pacote de mesmo nome, porque ela é simplesmente incrível. A vida é muito curta para ler dados lentamente.
+O objetivo desse tutorial é criar nosso primeiro gráfico com as informações coletadas no tutorial anterior. Pretendemos tomar as primeiras informações, das mais primárias, a partir do arquivo csv que geramos: pretendemos realizar um gráfico de fluxo de comércio, envolvendo exportações, importações, saldo e corrente de comércio. Trata-se de uma apresentação básica da relação bilateral comercial de qualquer país. A partir daqui, poderemos desenvolver melhor conceitos relacionados à lógica do próprio tidyverse (o formato tidy de tabelas) e apresentaremos algumas das muitas possibilidades disponíveis no lendário pacote ggplot2.
+
+# Preparando os dados
+
+No último tutorial preparamos os dados necessários para começar analisar o comércio internacional brasileiro. Eu sei que eu tinha prometido que a preparação dos dados tinha acabado - mas na verdade eu menti. A depender da informação que queremos apresentar, outras transformações devem ser realizadas. Antes, contudo, precisamos ler os dados. Usaremos a função vroom, do pacote de mesmo nome, porque ela é simplesmente incrível. A vida é muito curta para ler dados lentamente. O arquivo lido é o mesmo do tutorial anterior.
 
 ```{r}
 
@@ -30,9 +43,7 @@ exp_imp_mes <- vroom::vroom(here("input", "mdic", "exp_imp_mes.csv"))
 
 A primeira coisa que queremos é analisar o comércio como um todo do Brasil com um determinado país. Vamos supor, para fins deste tutorial, que queremos apenas os dados com a China. (Mais tarde tentaremos generalizar os resultados. Inicialmente, contudo, tentaremos fazer um trabalho de visualização de dados com um único país)
 
-## Fluxo Comercial
-
-### Ajustando os Dados
+## Filtrando os dados
 
 No nosso objetivo, o primeiro passo é realizar um filtro na base de dados para selecionarmos apenas as linhas relacionadas à China. Para isso, passamos a função do dplyr "filter" com a expressão "NO_PAIS == filtro". Como se pode ver, caso queiramos qualquer outro país a ser selecionado, basta alterar a variável "filtro". Em seguida, agruparemos os dados por ano e por direção de comércio e somaremos o resultado. Como se vê, o resultado são três colunas: uma para ano, outra para fluxo de comércio e outra para o valor exportado ou importado em cada ano.
 
@@ -50,7 +61,9 @@ df
 
 ```
 
-O resultado acima é bastante satisfatório mas não nos dá algumas informações bastante importantes: qual o saldo comercial (exportações menos importações) do Brasil com a China e qual a corrente de comércio (exportações mais importações) entre os dois países? Para realizar essa operação, o formato "long", ou "tidy" não é dos melhores. O ideal é somar uma coluna à outra, não é fácil propriamente somar linhas específicas na atual configuração. Para isso, usaremos duas funções bastante importantes: a pivot_wider e a pivot_longer.
+## Do formato long ao formato wide
+
+O resultado acima é bastante satisfatório mas não nos dá algumas informações bastante importantes: qual o saldo comercial (exportações menos importações) do Brasil com a China e qual a corrente de comércio (exportações mais importações) entre os dois países? Para realizar essa operação, o formato "long", ou "tidy"^[O formato tidy é um dos conceitos mais importantes do tidyverse. Depois que eu compreendi a lógica básica do conceito, pude perceber a força e a riqueza da construção. Para transformar uma determinada tabela em tidy, basta seguir a seguinte determinação: cada coluna equivale a uma variável, cada linha uma observaçãoo relacionada à variável. Curto e simples. Acho belo. No entanto, como podemos ver no caso em questão, *nem sempre* o formato tidy é o mais adequado para se trabalhar] não é dos melhores. O ideal é somar uma coluna à outra, não é fácil propriamente somar linhas específicas na atual configuração. Para isso, usaremos duas funções bastante importantes: a pivot_wider e a pivot_longer.
 
 Como se pode observar abaixo, queremos que as linhas da variável "trade_flow" se transformem em nomes de colunas. No caso, queremos que a coluna de "exportações" e a coluna de "importações" sejam colunas independentes com valores definidos pela coluna "value". Se cada uma delas for uma coluna distinta, podemos somá-las, subtraí-las, multiplicá-las... vai do seu interesse. No nosso caso, estamos satisfeitos com operações básicas.
 
@@ -61,6 +74,8 @@ df <- df %>%
 
 df
 ```
+
+## Somando colunas
 
 Agora que temos as duas colunas que queremos, precisamos criar as novas duas colunas que buscamos. Para isso, criamos colunas com a função "mutate", também do dplyr. Além disso, vamos alterar o nome das colunas com a função "rename" para que nosso gráfico fique mais bonito lá na frente.
 
@@ -76,6 +91,8 @@ df
 
 ```
 
+## De volta ao tidy
+
 Agora temos todas as informações que queremos para fazer um gráfico com o ggplot, pacote do tidyverse absolutamente matador em matéria de visualização de dados. Antes, contudo, precisamos retornar nosso dataframe ao formato tidy. Se, antes, utilizamos a função "pivot_wider", agora usaremos a função inversa, "pivot_longer". Selecionaremos as colunas que queremos que se transformem em linhas (no caso, todas as colunas entre Exportações e Saldo, utilizando o operador ":"), e logo em seguida selecionamos o que devemos fazer com os "valores" de cada uma dessas colunas (no caso, eles voltaram à coluna "value").
 
 
@@ -87,7 +104,7 @@ df
 
 ```
 
-### Usando o ggplot
+# Usando o ggplot
 
 Pronto. Finalmente podemos começar a usar o ggplot. Na sintaxe do ggplot, devemos primeiro criar o quadro em branco a partir do qual se deve construir o gráfico chamando a função "ggplot()". Em seguida, chamamos a função geom_qualquercoisa para definir qual figura geométrica queremos que o gráfico utilize. É uma estrutura bastante simples que está representada abaixo. No caso, selecionamos o gráfico de colunas (geom_col). Dentro do geom_col, a função aes() serve para selecionar quais as variáveis que devem ser apresentadas. O eixo X, no gráfico abaixo, está representando os anos (coluna CO_ANO) e o eixo Y representa as quantidades (coluna value). Por fim, a variável "fill", dentro da função "aes()" cumpre a função de pintar de cores diferentes cada tipo de fluxo de comércio (se exportações, importações, corrente ou saldo).
 
@@ -101,6 +118,8 @@ df
 
 ```
 
+## Facetando
+
 Caso quiséssemos, poderíamos terminar nosso trabalho nesse momento. Mas o gráfico está, convenhamos, um tanto quanto feio e, pior ainda, ele não passa informações de maneira clara. Podemos discernir tendências muito evidentes, mas relações internas ao movimento de exportações ou importações não estão fáceis de serem visualizadas. Queremos ter a capacidade de verificar as tendências de cada um dos quatro fluxos de comércio (exp, imp, saldo, corrente) de maneira independente. Para a nossa sorte, o ggplot torna isso muito fácil. Vamos utilizar, no caso, a função facet_wrap() para dividir a visualização de cada uma das variáveis.
 
 
@@ -111,9 +130,11 @@ df +
 
 ```
 
+## Identificando problemas
+
 Agora está muito melhor, apesar de ainda termos alguns problemas. De todo modo, o gráfico já está numa posição muito mais próxima do nosso objetivo final. Os problemas identificados são: 
 
-1. a ordem do gráfico não está legal. Seria melhor se pudéssemos incluir exportações ao lado das importações, assim como posicionar lado a lado corrente e saldo. 
+1. a ordem do gráfico não está legal. Seria melhor se pudéssemos incluir exportações ao lado das importações, assim como posicionar lado a lado corrente e saldo.
 
 2. Além disso, o eixo Y está usando notação científica, difícil de entender, e o eixo X está dividindo os números inteiros dos anos. 
 
@@ -124,6 +145,8 @@ Agora está muito melhor, apesar de ainda termos alguns problemas. De todo modo,
 Vamos tentar solucionar cada um dos problemas, um a um.
 
 Em geral, quando se está operando com variáveis categóricas (isto é, variáveis que não são quantitativas) no R, e queremos ordená-las de alguma maneira, devemos utilizar "fatores". 
+
+## Reordenando com factors
 
 Para transformar uma determinada variável em fator, passamos a função "factor" e selecionamos os níveis de ordenamento, no caso "levels". Eu quero que, em primeiro lugar, apareça o gráfico de "Exportações", em segundo lugar o gráfico de "Importações" e assim vai. Além disso, eu faço questão que o eixo X apareça tanto nos gráficos da parte de baixo, quanto da parte de cima. Para realizar essa operação, eu adiciono o parâmetro "scales" com a opção "free_x" que faz justamente isso: torna o eixo X livre e independente da parte de baixo. Vamos ao resultado.
 
@@ -137,6 +160,8 @@ df
 
 ```
 
+## Tornando gráficos legíveis com labels
+
 O primeiro passo foi resolvido. Os gráficos estão em ordem. O segundo passo deve ser, então, alterar o formato da escala dos eixos X e Y. Em primeiro lugar, alterar a notação científica do eixo Y que está simplesmente ilegível. Em segundo, não deixar que o ggplot apresente o eixo X em formato não inteiro porque isso não faz sentido. Para isso, utilizaremos duas funções: scale_x_continuous e scale_y_continuous porque nossas duas variáveis são contínuas. No eixo y, utilizaremos a função "label_number_si" para que possamos ler números grandes em formato intuitivo. Além disso, passaremos a função pretty_breaks no parametro "breaks" para que as quebras entre as observações seja feita de maneira bonita e inteligente. Imagina se tivéssemos que selecionar à mão a quantidade de espaços em branco, o número de observações de cada um dos gráficos? Trabalho danado. Muita preguiça. Por sorte, essas duas funções do pacote 'scales' existem para nos salvar.
 
 ```{r}
@@ -147,6 +172,8 @@ df <- df +
 
 df
 ```
+
+## Temas
 
 Muito melhor, não é mesmo? Ainda temos pequenos problemas: a legenda inútil à direita, o nome dos eixos X e Y e, enfim, essas cores que, convenhamos, estão horríveis. 
 
@@ -159,6 +186,8 @@ df <- df +
 df
 ```
 
+## Minimalismo tá na moda mas nem por isso é ruim
+
 Muito mais bonito, fala sério. Para retirar as duas legendas é mais fácil ainda. Passamos a função theme, também do ggplot, com os seguintes parâmetros abaixo.
 
 ```{r}
@@ -169,6 +198,8 @@ df <- df +
 df
 ```
 
+## Jamais deixar de dar os créditos
+
 Por fim, o detalhe final: podemos colocar um título no gráfico e uma legenda abaixo, referenciando a fonte dos dados.
 
 ```{r}
@@ -178,6 +209,8 @@ df <- df +
 df
 
 ```
+## Juntando tudo
+
 É o gráfico mais lindo do mundo? Certamente não. Mas funciona. Se quisermos juntar todos os passos em um só, o código seria o seguinte:
 
 ```{r}
@@ -207,4 +240,7 @@ exp_imp %>%
 
 ```
 
+# Próximos passos
+
+Agora que temos nosso primeiro gráfico, o céu é o limite. A partir daqui, tentaremos desenvolver melhor as informações necessárias para um bom relatório com um apanhado geral da relação comercial do Brasil com seus parceiros. Depois disso, tentaremos generalizar o procedimento para que ele seja viável, de maneira automática, para todos os outros parceiros comerciais. Mas até lá tem um bom caminho pela frente. Nos vemos nos próximos capítulos.
 
