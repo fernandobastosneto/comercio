@@ -16,7 +16,7 @@ exp_imp_mes <- vroom::vroom(here("input", "mdic", "exp_imp_mes.csv"))
 
 ## Função que seleciona o País, o Bloco ou o Brasil em geral -----
 
-fun_variavel <- function(data, var, filtro) {
+fun_inicial <- function(data, var, filtro) {
   
   # no caso, o parâmetro "var" serve para definir se devemos tomar por base um país (NO_PAIS)
   # ou um grupo de países (NO_BLOCO)
@@ -33,23 +33,31 @@ fun_variavel <- function(data, var, filtro) {
 
 ## Função que seleciona quantos anos ----
 
+# fun_anos <- function(data, anos) {
+#   
+#   if (anos == "último") {
+#     data <- data %>%
+#       filter(CO_ANO == max(CO_ANO))
+#   }
+#   
+#   else if (anos == "quatro") {
+#     data <- data %>%
+#       filter(CO_ANO > max(CO_ANO)-4)
+#   }
+#   
+#   else if (anos == "cinco") {
+#     data <- data %>%
+#       filter(CO_ANO > max(CO_ANO)-5)
+#   }
+#   data
+# }
+
+
 fun_anos <- function(data, anos) {
-  
-  if (anos == "último") {
-    data <- data %>%
-      filter(CO_ANO == max(CO_ANO))
-  }
-  
-  else if (anos == "quatro") {
-    data <- data %>%
-      filter(CO_ANO > max(CO_ANO)-4)
-  }
-  
-  else if (anos == "cinco") {
-    data <- data %>%
-      filter(CO_ANO > max(CO_ANO)-5)
-  }
-  data
+
+  data %>%
+    filter(CO_ANO > max(CO_ANO)-anos)
+
 }
 
 # Funções Corrente de Comércio -----
@@ -161,7 +169,6 @@ fun_produtos_grafico <- function(data) {
     scale_fill_tableau() +
     theme(legend.position = "none", axis.title.x = element_blank(),
           axis.title.y = element_blank())
-  
 }
 
 fun_produtos_tabela <- function(data, ano) {
@@ -174,7 +181,7 @@ fun_produtos_tabela <- function(data, ano) {
     mutate(Variação = round((value/lead(value) - 1)*100), 3) %>%
     mutate(Porcentagem = round((value/total_ano)*100),3) %>% 
     ungroup() %>% 
-    fun_anos("quatro") %>%
+    fun_anos(4) %>%
     group_by(CO_ANO) %>% 
     slice_max(value, n = 10) %>%
     mutate(Posição = row_number()) %>%
@@ -254,7 +261,7 @@ fun_paises_tabela <- function(data, ano) {
     mutate(Variação = round((value/lead(value) - 1)*100), 3) %>%
     mutate(Porcentagem = round((value/total_ano)*100),3) %>% 
     ungroup() %>% 
-    fun_anos("quatro") %>%
+    fun_anos(4) %>%
     group_by(CO_ANO) %>%
     arrange(desc(value)) %>% 
     rename(Posição = rank) %>%
@@ -402,7 +409,7 @@ fun_isic_fat_tabela <- function(data, fator) {
 # TESTES -----
 ## Tentando resolver o erro da porcentagem quando há oscilação entre negativo e positivo
 
-fun_variavel(exp_imp, NO_PAIS, filtro = "Canadá") %>%
+fun_inicial(exp_imp, NO_PAIS, filtro = "Canadá") %>%
   fun_corrente_dados(filtro = "Canadá") %>% 
   pivot_wider(names_from = "trade_flow", 
               values_from = value,
@@ -424,70 +431,70 @@ fun_variavel(exp_imp, NO_PAIS, filtro = "Canadá") %>%
 
 
 
-fun_variavel(exp_imp_mes, NO_PAIS, filtro = "Brasil") %>%
-  group_by(trade_flow, CO_ANO, NO_PAIS) %>%
-  summarise(value = sum(value)) %>%
-  group_by(trade_flow, CO_ANO) %>%
-  mutate(total_ano = sum(value)) %>%
-  group_by(CO_ANO, trade_flow) %>%
-  mutate(n = n()) %>% 
-  ungroup() %>%
-  filter(trade_flow == "exp") %>% 
-  mutate(porcentagem = value/total_ano) %>%
-  mutate(HH = porcentagem^2) %>%
-  group_by(CO_ANO) %>% 
-  summarise(HH = sum(HH)) %>% 
-  ggplot() +
-  geom_col(aes(CO_ANO, HH, fill = HH), show.legend = F) +
-  scale_x_continuous(breaks = pretty_breaks(), name = NULL) +
-  scale_y_continuous(name = "Índice Herfindahl-Hirschman") +
-  labs(title = "Índice Herfindahl-Hirschman (HH)",
-       subtitle = "Destino das Exportações",
-       caption = "Fonte: Ministério da Economia")
-  
-
-fun_variavel(exp_imp_mes, NO_PAIS, filtro = "Brasil") %>%
-  group_by(trade_flow, CO_ANO, NO_PAIS) %>%
-  summarise(value = sum(value)) %>%
-  group_by(trade_flow, CO_ANO) %>%
-  mutate(total_ano = sum(value)) %>%
-  group_by(CO_ANO, trade_flow) %>%
-  mutate(n = n()) %>% 
-  ungroup() %>%
-  filter(trade_flow == "imp") %>% 
-  mutate(porcentagem = value/total_ano) %>%
-  mutate(HH = porcentagem^2) %>%
-  group_by(CO_ANO) %>% 
-  summarise(HH = sum(HH)) %>% 
-  ggplot() +
-  geom_col(aes(CO_ANO, HH, fill = HH), show.legend = F) +
-  scale_x_continuous(breaks = pretty_breaks(), name = NULL) +
-  scale_y_continuous(name = "Índice Herfindahl-Hirschman") +
-  labs(title = "Índice Herfindahl-Hirschman (HH)",
-       subtitle = "Origem das Importações",
-       caption = "Fonte: Ministério da Economia")
-
-
-fun_variavel(exp_imp_mes, NO_PAIS, filtro = "Brasil") %>%
-  group_by(trade_flow, CO_ANO, NO_PAIS) %>% 
-  summarise(value = sum(value)) %>%
-  pivot_wider(names_from = trade_flow, values_from = value, values_fill = 0) %>%
-  mutate(corrente = exp + imp) %>% 
-  select(CO_ANO, NO_PAIS, corrente) %>% 
-  group_by(CO_ANO) %>%
-  mutate(total_ano = sum(corrente)) %>%
-  mutate(n = n()) %>% 
-  ungroup() %>% 
-  mutate(porcentagem = corrente/total_ano) %>%
-  mutate(HH = porcentagem^2) %>%
-  group_by(CO_ANO) %>% 
-  summarise(HH = sum(HH)) %>% 
-  ggplot() +
-  geom_col(aes(CO_ANO, HH, fill = HH), show.legend = F) +
-  scale_x_continuous(breaks = pretty_breaks(), name = NULL) +
-  scale_y_continuous(name = "Índice Herfindahl-Hirschman") +
-  labs(title = "Índice Herfindahl-Hirschman (HH)",
-       subtitle = "Corrente de Comércio",
-       caption = "Fonte: Ministério da Economia")
+# fun_variavel(exp_imp_mes, NO_PAIS, filtro = "Brasil") %>%
+#   group_by(trade_flow, CO_ANO, NO_PAIS) %>%
+#   summarise(value = sum(value)) %>%
+#   group_by(trade_flow, CO_ANO) %>%
+#   mutate(total_ano = sum(value)) %>%
+#   group_by(CO_ANO, trade_flow) %>%
+#   mutate(n = n()) %>% 
+#   ungroup() %>%
+#   filter(trade_flow == "exp") %>% 
+#   mutate(porcentagem = value/total_ano) %>%
+#   mutate(HH = porcentagem^2) %>%
+#   group_by(CO_ANO) %>% 
+#   summarise(HH = sum(HH)) %>% 
+#   ggplot() +
+#   geom_col(aes(CO_ANO, HH, fill = HH), show.legend = F) +
+#   scale_x_continuous(breaks = pretty_breaks(), name = NULL) +
+#   scale_y_continuous(name = "Índice Herfindahl-Hirschman") +
+#   labs(title = "Índice Herfindahl-Hirschman (HH)",
+#        subtitle = "Destino das Exportações",
+#        caption = "Fonte: Ministério da Economia")
+#   
+# 
+# fun_variavel(exp_imp_mes, NO_PAIS, filtro = "Brasil") %>%
+#   group_by(trade_flow, CO_ANO, NO_PAIS) %>%
+#   summarise(value = sum(value)) %>%
+#   group_by(trade_flow, CO_ANO) %>%
+#   mutate(total_ano = sum(value)) %>%
+#   group_by(CO_ANO, trade_flow) %>%
+#   mutate(n = n()) %>% 
+#   ungroup() %>%
+#   filter(trade_flow == "imp") %>% 
+#   mutate(porcentagem = value/total_ano) %>%
+#   mutate(HH = porcentagem^2) %>%
+#   group_by(CO_ANO) %>% 
+#   summarise(HH = sum(HH)) %>% 
+#   ggplot() +
+#   geom_col(aes(CO_ANO, HH, fill = HH), show.legend = F) +
+#   scale_x_continuous(breaks = pretty_breaks(), name = NULL) +
+#   scale_y_continuous(name = "Índice Herfindahl-Hirschman") +
+#   labs(title = "Índice Herfindahl-Hirschman (HH)",
+#        subtitle = "Origem das Importações",
+#        caption = "Fonte: Ministério da Economia")
+# 
+# 
+# fun_variavel(exp_imp_mes, NO_PAIS, filtro = "Brasil") %>%
+#   group_by(trade_flow, CO_ANO, NO_PAIS) %>% 
+#   summarise(value = sum(value)) %>%
+#   pivot_wider(names_from = trade_flow, values_from = value, values_fill = 0) %>%
+#   mutate(corrente = exp + imp) %>% 
+#   select(CO_ANO, NO_PAIS, corrente) %>% 
+#   group_by(CO_ANO) %>%
+#   mutate(total_ano = sum(corrente)) %>%
+#   mutate(n = n()) %>% 
+#   ungroup() %>% 
+#   mutate(porcentagem = corrente/total_ano) %>%
+#   mutate(HH = porcentagem^2) %>%
+#   group_by(CO_ANO) %>% 
+#   summarise(HH = sum(HH)) %>% 
+#   ggplot() +
+#   geom_col(aes(CO_ANO, HH, fill = HH), show.legend = F) +
+#   scale_x_continuous(breaks = pretty_breaks(), name = NULL) +
+#   scale_y_continuous(name = "Índice Herfindahl-Hirschman") +
+#   labs(title = "Índice Herfindahl-Hirschman (HH)",
+#        subtitle = "Corrente de Comércio",
+#        caption = "Fonte: Ministério da Economia")
 
 
